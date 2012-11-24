@@ -1,5 +1,5 @@
 /************************************************
- * GPlotter - version 1.0
+ * GPlotter - version 0.1 alpha
  * A neat little program for displaying the
  * output of functions in various ways, among
  * them, as a representation along a Cartesian

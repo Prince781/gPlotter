@@ -15,7 +15,7 @@
 
 const gchar *GPLOTTER_VERSION_STRING = "0.1 Alpha";
 const int numWindows = 1;
-GtkWidget *winlist[numWindows];
+//GtkWidget *winlist[numWindows];
 #define GPLOTTER_VERSION 0.1a
 
 /* list of menu response functions, below, must use the format:

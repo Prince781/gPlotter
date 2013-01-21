@@ -5,7 +5,7 @@ SUBDIRS = src po
 
 gplotterdocdir = ${prefix}/doc/gplotter
 gplotterdoc_DATA = \
-	README\
+	README.md\
 	COPYING\
 	AUTHORS\
 	ChangeLog\

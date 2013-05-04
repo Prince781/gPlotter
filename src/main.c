@@ -27,6 +27,7 @@ static void show_about() { //display about dialogs
 	                      "website", _("https://github.com/Prince781/gPlotter"),
 	                      "license-type", GTK_LICENSE_GPL_2_0,
 	                      "website-label", _("GitHub Page"),
+	                      "logo-icon-name", "application-x-executable",
 	                      NULL);
 }
 
@@ -50,6 +51,7 @@ static void new_session() {
 	gtk_window_set_default_size(GTK_WINDOW(window),1000,640);
 	gtk_widget_set_size_request(GTK_WIDGET(window), 100, 640);
 	gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(window), TRUE);
+	gtk_window_set_icon_name(GTK_WINDOW(window), "application-x-executable");
 
 	//create main window content, top content
 	window_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -75,7 +77,9 @@ static void new_session() {
 	wt_menubutton = gtk_menu_button_new();
 
 	gtk_button_set_use_stock (GTK_BUTTON(wt_menubutton), TRUE);
-	//gtk_button_set_image(GTK_BUTTON(wt_menubutton), 
+	GtkWidget *wt_menubutton_image = gtk_image_new_from_icon_name("emblem-system-symbolic", GTK_ICON_SIZE_MENU);
+	gtk_button_set_image(GTK_BUTTON(wt_menubutton), wt_menubutton_image);
+	
 	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 10);
 	
 	//add separator to window_content

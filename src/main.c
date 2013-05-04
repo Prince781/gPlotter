@@ -11,6 +11,7 @@
 #include <gio/gio.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
+#include <gdk/gdk.h>
 #include <cairo.h>
 #include "gplotter.h" //config data
 
@@ -19,7 +20,7 @@ GtkApplication *app;
 static void show_about() { //display about dialogs
 	GtkWindow *parent = gtk_application_get_active_window(GTK_APPLICATION(app));
 	gtk_show_about_dialog(parent,
-	                      "comments", _("A useful program for graphing the output of functions, and solving them."),
+	                      "comments", _("A useful program for graphing the output of functions."),
 	                      "copyright", _("Copyright \xc2\xa9 2013 Princeton Ferro"),
 	                      "program-name", _("gPlotter"),
 	                      "version", GPLOTTER_VERSION_STRING,
@@ -56,6 +57,8 @@ static void new_session(GtkApplication *app, gpointer user_data) {
 	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_default_size(GTK_WINDOW(window),1000,640);
+	gtk_widget_set_size_request(GTK_WIDGET(window), 100, 640);
+	gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(window), TRUE);
 
 	//create main window content, top content
 	window_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -63,19 +66,23 @@ static void new_session(GtkApplication *app, gpointer user_data) {
 
 	gtk_container_add(GTK_CONTAINER(window), window_content);
 	window_top_label = gtk_label_new("Window Top area...");
-	gtk_box_pack_start(GTK_BOX(window_content), window_top, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(window_content), window_top, FALSE, FALSE, 0);
+	gtk_widget_set_size_request(GTK_WIDGET(window_top), 1000, 60);
 	//TODO: add window_top code here
+	
 	//TODO: add window_top code here
 	gtk_box_pack_start(GTK_BOX(window_top), window_top_label, TRUE, FALSE, 0);
 	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	//add separator to window_content
-	gtk_box_pack_start(GTK_BOX(window_content), window_top_separator, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(window_content), window_top_separator, FALSE, FALSE, 0);
 
 	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_pack_start(GTK_BOX(window_content), window_bottom, TRUE, TRUE, 0);
 
-	gtk_widget_set_size_request(GTK_WIDGET(window_top), 1000, 60);
-	gtk_widget_set_size_request(GTK_WIDGET(window_bottom), 1000, 580);
+	//gtk_widget_override_background_color (GTK_WIDGET(window_bottom), GTK_STATE_)
+	GdkRGBA *window_bottom_color = malloc(sizeof(*window_bottom_color));
+	gdk_rgba_parse(window_bottom_color, "#FFFFFF");
+	gtk_widget_override_background_color(GTK_WIDGET(window_bottom), GTK_STATE_NORMAL, window_bottom_color);
 	/*
 	//create a new label
 	label1 = gtk_label_new("y = sin(x - 4)");
@@ -85,7 +92,6 @@ static void new_session(GtkApplication *app, gpointer user_data) {
 	separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_container_add(GTK_CONTAINER(window), separator);
 	*/
-	
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
 }
 

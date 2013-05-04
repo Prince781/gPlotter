@@ -6,7 +6,8 @@
 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(localedir)"\" \
-	-DPACKAGE_SRC_DIR=\""$(srcdir)"\" \
+	-DPACKAGE_SRC_DIR=\""$(srcdir). \
+	$(GDK_CFLAGS)"\" \
 	-DPACKAGE_DATA_DIR=\""$(pkgdatadir)"\" \
 	$(GPLOTTER_CFLAGS)
 
@@ -22,6 +23,7 @@ gplotter_SOURCES = \
 gplotter_LDFLAGS = \
 	-Wl,--export-dynamic
 
-gplotter_LDADD = $(GPLOTTER_LIBS)
+gplotter_LDADD = $(GPLOTTER_LIBS) \
+	$(GDK_LIBS)
 
 

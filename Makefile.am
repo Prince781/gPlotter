@@ -5,12 +5,7 @@ SUBDIRS = src po
 
 gplotterdocdir = ${prefix}/doc/gplotter
 gplotterdoc_DATA = \
-	README.md\
-	COPYING\
-	AUTHORS\
-	ChangeLog\
-	INSTALL\
-	NEWS
+	README.md
 
 
 INTLTOOL_FILES = intltool-extract.in \

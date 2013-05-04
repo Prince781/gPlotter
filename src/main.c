@@ -5,39 +5,27 @@
  * them, as a representation along a Cartesian
  * plane in two-dimensional space.
  * ++++++++++++++++++++++++++++++++++++++++++++++
- * 2012 Princeton Ferro
+ * 2013 Princeton Ferro
 *************************************************/
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <cairo.h>
-
-const gchar *GPLOTTER_VERSION_STRING = "0.1 Alpha";
-const int numWindows = 1;
-//GtkWidget *winlist[numWindows];
-#define GPLOTTER_VERSION 0.1a
-
-/* list of menu response functions, below, must use the format:
- * static void (GSimpleAction *action, GVariant *parameter, gpointer user_data)
-**/
+#include "gplotter.h" //config data
 
 GtkApplication *app;
-static void view_log(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-	g_print("This should output the event log...");
-}
 
-static void show_about() {
+static void show_about() { //display about dialogs
 	GtkWindow *parent = gtk_application_get_active_window(GTK_APPLICATION(app));
-	const gchar *authors[] = {"Princeton Ferro", NULL};
 	gtk_show_about_dialog(parent,
-	                      "authors", authors,
 	                      "comments", _("A useful program for graphing the output of functions, and solving them."),
-	                      "copyright", _("Copyright \xc2\xa9 2012 Princeton Ferro"),
+	                      "copyright", _("Copyright \xc2\xa9 2013 Princeton Ferro"),
 	                      "program-name", _("gPlotter"),
 	                      "version", GPLOTTER_VERSION_STRING,
 	                      "website", _("https://github.com/Prince781/gPlotter"),
-	                      "website-label", _("Homepage"),
+	                      "license-type", GTK_LICENSE_GPL_2_0,
+	                      "website-label", _("GitHub Page"),
 	                      NULL);
 }
 
@@ -50,7 +38,55 @@ static void new_window() {
 }
 
 static void quit() { //quit the program
+	g_print("Quitting the application now...");
 	g_application_quit(G_APPLICATION(app));
+}
+
+static void new_session(GtkApplication *app, gpointer user_data) {
+	//create a new window, create a new session, and initialize widgets:
+	GtkWidget *window;
+	GtkWidget *window_content;
+	GtkWidget *window_top;
+	GtkWidget *window_top_label;
+	GtkWidget *window_top_separator;
+	GtkWidget *window_bottom; //everything else below
+	//draw the window and do callback stuff
+	window = gtk_application_window_new(app);
+	gtk_window_set_application(GTK_WINDOW(window), GTK_APPLICATION(app));
+	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	gtk_window_set_default_size(GTK_WINDOW(window),1000,640);
+
+	//create main window content, top content
+	window_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	window_top = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+
+	gtk_container_add(GTK_CONTAINER(window), window_content);
+	window_top_label = gtk_label_new("Window Top area...");
+	gtk_box_pack_start(GTK_BOX(window_content), window_top, TRUE, TRUE, 0);
+	//TODO: add window_top code here
+	//TODO: add window_top code here
+	gtk_box_pack_start(GTK_BOX(window_top), window_top_label, TRUE, FALSE, 0);
+	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	//add separator to window_content
+	gtk_box_pack_start(GTK_BOX(window_content), window_top_separator, TRUE, TRUE, 0);
+
+	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_box_pack_start(GTK_BOX(window_content), window_bottom, TRUE, TRUE, 0);
+
+	gtk_widget_set_size_request(GTK_WIDGET(window_top), 1000, 60);
+	gtk_widget_set_size_request(GTK_WIDGET(window_bottom), 1000, 580);
+	/*
+	//create a new label
+	label1 = gtk_label_new("y = sin(x - 4)");
+	gtk_box_pack_start(GTK_BOX(vbox), label1, FALSE, FALSE, 0);
+
+	//create a horizontal separator
+	separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_container_add(GTK_CONTAINER(window), separator);
+	*/
+	
+	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
 }
 
 //end of menu functions
@@ -58,7 +94,6 @@ static void quit() { //quit the program
 static void startup(GtkApplication *app, gpointer user_data) {
 	static const GActionEntry actions[] = { //accessed by app.{name}
 		{"newwin", new_window},
-		{"viewlog", view_log },
 		{"about", show_about },
 		{"help", show_help },
 		{"quit", quit }
@@ -79,15 +114,8 @@ static void startup(GtkApplication *app, gpointer user_data) {
 	g_object_unref(menu);
 }
 
-static void activate(GtkApplication *app, gpointer user_data) { //show the window
-	GtkWidget *window;
-	//draw the window and do callback stuff
-	window = gtk_application_window_new(app);
-	gtk_window_set_application(GTK_WINDOW(window), GTK_APPLICATION(app));
-	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
-	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-	gtk_window_set_default_size(GTK_WINDOW(window),1000,640);
-	gtk_widget_show_all(GTK_WIDGET(window));
+static void activate(GtkApplication *app, gpointer user_data) {
+	new_session(app, user_data); //create a new session
 }
 
 int main(int argc, char **argv) {

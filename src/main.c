@@ -35,7 +35,11 @@ static void new_session() {
 	GtkWidget *window;
 	GtkWidget *window_content;
 	GtkWidget *window_top;
-	GtkWidget *window_top_label;
+		GtkWidget *wt_save_export_buttons_container;
+			GtkWidget *wt_sebc_save;
+			GtkWidget *wt_sebc_export;
+		GtkWidget *wt_equation_editor;
+		GtkWidget *wt_menubutton;
 	GtkWidget *window_top_separator;
 	GtkWidget *window_bottom; //everything else below
 	//draw the window and do callback stuff
@@ -52,33 +56,39 @@ static void new_session() {
 	window_top = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
 	gtk_container_add(GTK_CONTAINER(window), window_content);
-	window_top_label = gtk_label_new("Window Top area...");
 	gtk_box_pack_start(GTK_BOX(window_content), window_top, FALSE, FALSE, 0);
-	gtk_widget_set_size_request(GTK_WIDGET(window_top), 1000, 60);
-	//TODO: add window_top code here
+	gtk_widget_set_size_request(window_top, 1000, 34);
 	
-	//TODO: add window_top code here
-	gtk_box_pack_start(GTK_BOX(window_top), window_top_label, TRUE, FALSE, 0);
-	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	//top portion of window
+	wt_save_export_buttons_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_box_pack_start(GTK_BOX(window_top), wt_save_export_buttons_container, FALSE, FALSE, 10);
+	wt_sebc_save = gtk_button_new();
+	gtk_button_set_label(GTK_BUTTON(wt_sebc_save), "Save");
+	wt_sebc_export = gtk_button_new();
+	gtk_button_set_label(GTK_BUTTON(wt_sebc_export), "Export");
+	gtk_box_pack_start(GTK_BOX(wt_save_export_buttons_container),
+	                   GTK_WIDGET(wt_sebc_save), TRUE, FALSE, 0);
+	gtk_box_pack_end(GTK_BOX(wt_save_export_buttons_container),
+	                 GTK_WIDGET(wt_sebc_export), TRUE, FALSE, 0);
+	wt_equation_editor = gtk_entry_new();
+	gtk_box_pack_start(GTK_BOX(window_top), wt_equation_editor, TRUE, TRUE, 10);
+	wt_menubutton = gtk_menu_button_new();
+
+	gtk_button_set_use_stock (GTK_BUTTON(wt_menubutton), TRUE);
+	//gtk_button_set_image(GTK_BUTTON(wt_menubutton), 
+	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 10);
+	
 	//add separator to window_content
-	gtk_box_pack_start(GTK_BOX(window_content), window_top_separator, FALSE, FALSE, 0);
+	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_box_pack_start(GTK_BOX(window_content), GTK_WIDGET(window_top_separator), FALSE, FALSE, 0);
 
 	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_box_pack_start(GTK_BOX(window_content), window_bottom, TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(window_content), GTK_WIDGET(window_bottom), TRUE, TRUE, 0);
 
-	//gtk_widget_override_background_color (GTK_WIDGET(window_bottom), GTK_STATE_)
 	GdkRGBA *window_bottom_color = malloc(sizeof(*window_bottom_color));
 	gdk_rgba_parse(window_bottom_color, "#FFFFFF");
 	gtk_widget_override_background_color(GTK_WIDGET(window_bottom), GTK_STATE_NORMAL, window_bottom_color);
-	/*
-	//create a new label
-	label1 = gtk_label_new("y = sin(x - 4)");
-	gtk_box_pack_start(GTK_BOX(vbox), label1, FALSE, FALSE, 0);
 
-	//create a horizontal separator
-	separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-	gtk_container_add(GTK_CONTAINER(window), separator);
-	*/
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
 }
 
@@ -128,7 +138,7 @@ static void activate() {
 int main(int argc, char **argv) {
 	int status;
 	
-	app = gtk_application_new("org.gtk.gplotter",G_APPLICATION_FLAGS_NONE);
+	app = gtk_application_new("org.gtk.gPlotter",G_APPLICATION_FLAGS_NONE);
 	g_signal_connect(app, "startup", G_CALLBACK(startup), NULL);
 	g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
 	status = g_application_run(G_APPLICATION(app), argc, argv);

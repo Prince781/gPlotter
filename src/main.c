@@ -30,20 +30,7 @@ static void show_about() { //display about dialogs
 	                      NULL);
 }
 
-static void show_help(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-	g_print("This should show the help data...");
-}
-
-static void new_window() {
-	g_print("This should create a new window.");
-}
-
-static void quit() { //quit the program
-	g_print("Quitting the application now...");
-	g_application_quit(G_APPLICATION(app));
-}
-
-static void new_session(GtkApplication *app, gpointer user_data) {
+static void new_session() {
 	//create a new window, create a new session, and initialize widgets:
 	GtkWidget *window;
 	GtkWidget *window_content;
@@ -95,9 +82,23 @@ static void new_session(GtkApplication *app, gpointer user_data) {
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
 }
 
+static void show_help() {
+	g_print("This should show the help data...");
+}
+
+static void new_window() {
+	g_print("This should create a new window.");
+	new_session(app);
+}
+
+static void quit() { //quit the program
+	g_print("Quitting the application now...");
+	g_application_quit(G_APPLICATION(app));
+}
+
 //end of menu functions
 
-static void startup(GtkApplication *app, gpointer user_data) {
+static void startup() {
 	static const GActionEntry actions[] = { //accessed by app.{name}
 		{"newwin", new_window},
 		{"about", show_about },
@@ -120,8 +121,8 @@ static void startup(GtkApplication *app, gpointer user_data) {
 	g_object_unref(menu);
 }
 
-static void activate(GtkApplication *app, gpointer user_data) {
-	new_session(app, user_data); //create a new session
+static void activate() {
+	new_session(app); //create a new session
 }
 
 int main(int argc, char **argv) {

@@ -20,6 +20,8 @@ bin_PROGRAMS = gplotter
 gplotter_SOURCES = \
 	main.c
 
+gplotter_CFLAGS = -std=gnu11 
+
 gplotter_LDFLAGS = \
 	-Wl,--export-dynamic
 

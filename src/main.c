@@ -7,6 +7,7 @@
  * ++++++++++++++++++++++++++++++++++++++++++++++
  * 2013 Princeton Ferro
 *************************************************/
+#include <stdio.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <glib/gstdio.h>
@@ -35,12 +36,13 @@ static void new_session() {
 	//create a new window, create a new session, and initialize widgets:
 	GtkWidget *window;
 	GtkWidget *window_content;
-	GtkWidget *window_top;
-		GtkWidget *wt_save_export_buttons_container;
-			GtkWidget *wt_sebc_save;
-			GtkWidget *wt_sebc_export;
-		GtkWidget *wt_equation_editor;
-		GtkWidget *wt_menubutton;
+	GtkWidget *window_top_alignment;
+		GtkWidget *window_top;
+			GtkWidget *wt_save_export_buttons_container;
+				GtkWidget *wt_sebc_save;
+				GtkWidget *wt_sebc_export;
+			GtkWidget *wt_equation_editor;
+			GtkWidget *wt_menubutton;
 	GtkWidget *window_top_separator;
 	GtkWidget *window_bottom; //everything else below
 	//draw the window and do callback stuff
@@ -49,19 +51,21 @@ static void new_session() {
 	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_default_size(GTK_WINDOW(window),1000,640);
-	gtk_widget_set_size_request(GTK_WIDGET(window), 100, 640);
 	gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(window), TRUE);
 	gtk_window_set_icon_name(GTK_WINDOW(window), "application-x-executable");
 
 	//create main window content, top content
 	window_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	window_top_alignment = gtk_alignment_new(0, 1, 1, 0);
 	window_top = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 
 	gtk_container_add(GTK_CONTAINER(window), window_content);
-	gtk_box_pack_start(GTK_BOX(window_content), window_top, FALSE, FALSE, 0);
-	gtk_widget_set_size_request(window_top, 1000, 34);
+	gtk_box_pack_start(GTK_BOX(window_content), window_top_alignment, FALSE, FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(window_top_alignment), window_top);
+	gtk_widget_set_size_request(window_top_alignment, 1000, 36);
+	gtk_widget_set_size_request(window_top, 1000, 30);
 	
-	//top portion of window
+	//top portion of window (window_top); content
 	wt_save_export_buttons_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_box_pack_start(GTK_BOX(window_top), wt_save_export_buttons_container, FALSE, FALSE, 10);
 	wt_sebc_save = gtk_button_new();
@@ -76,10 +80,10 @@ static void new_session() {
 	gtk_box_pack_start(GTK_BOX(window_top), wt_equation_editor, TRUE, TRUE, 10);
 	wt_menubutton = gtk_menu_button_new();
 
+	//settings menu-button
 	gtk_button_set_use_stock (GTK_BUTTON(wt_menubutton), TRUE);
 	GtkWidget *wt_menubutton_image = gtk_image_new_from_icon_name("emblem-system-symbolic", GTK_ICON_SIZE_MENU);
 	gtk_button_set_image(GTK_BUTTON(wt_menubutton), wt_menubutton_image);
-	
 	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 10);
 	
 	//add separator to window_content
@@ -89,19 +93,15 @@ static void new_session() {
 	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_pack_end(GTK_BOX(window_content), GTK_WIDGET(window_bottom), TRUE, TRUE, 0);
 
-	GdkRGBA *window_bottom_color = malloc(sizeof(*window_bottom_color));
+	static GdkRGBA *window_bottom_color;
 	gdk_rgba_parse(window_bottom_color, "#FFFFFF");
 	gtk_widget_override_background_color(GTK_WIDGET(window_bottom), GTK_STATE_NORMAL, window_bottom_color);
 
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
 }
 
-static void show_help() {
-	g_print("This should show the help data...");
-}
-
 static void new_window() {
-	g_print("This should create a new window.");
+	g_print("New window created.");
 	new_session(app);
 }
 
@@ -116,14 +116,12 @@ static void startup() {
 	static const GActionEntry actions[] = { //accessed by app.{name}
 		{"newwin", new_window},
 		{"about", show_about },
-		{"help", show_help },
 		{"quit", quit }
 	};
 	GMenu *menu;
 	GMenu *about_menu;
 	about_menu = g_menu_new();
 	g_menu_append(about_menu, "About gPlotter", "app.about");
-	g_menu_append(about_menu, "Help", "app.help");
 	g_menu_append(about_menu, "Quit", "app.quit");
 	g_action_map_add_action_entries(G_ACTION_MAP(app), actions, G_N_ELEMENTS(actions), app);
 	//add visible items (labels) to the menu

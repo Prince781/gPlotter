@@ -15,6 +15,8 @@ INTLTOOL_FILES = intltool-extract.in \
 EXTRA_DIST = $(gplotterdoc_DATA) \
 	$(INTLTOOL_FILES)
 
+AM_CFLAGS = -std=c11 
+
 DISTCLEANFILES = intltool-extract \
 	intltool-merge \
 	intltool-update \

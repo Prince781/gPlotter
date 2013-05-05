@@ -37,3 +37,7 @@ GtkEntry#wt_equation_editor {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
+GtkBox#window_bottom {
+	box-shadow: 0px 0px 5px #000000;
+}

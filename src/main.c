@@ -31,19 +31,21 @@ static void show_about() { //display about dialogs
 	                      "website-label", _("GitHub Page"),
 	                      "logo-icon-name", "application-x-executable",
 	                      NULL);
-	g_object_unref(parent);
 }
 
 static void save_document_as() { //display save dialog
-	GtkWindow *parent = gtk_application_get_active_window(GTK_APPLICATION(app));
+	GtkWindow *parent_window = gtk_application_get_active_window(GTK_APPLICATION(app));
 	GtkWidget *dialog;
 	dialog = gtk_file_chooser_dialog_new("Save Document As", 
-	                                     parent, GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                     parent_window,
+	                                     GTK_FILE_CHOOSER_ACTION_SAVE,
 	                                     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 	                                     GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 	                                     NULL);
 	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+	gtk_widget_hide_on_delete(dialog);
+	gint dlg_response = gtk_dialog_run(GTK_DIALOG(dialog));
+	if (dlg_response == GTK_RESPONSE_ACCEPT) {
 		char *filename;
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 		g_print("Document saved as \"%s\".", filename);
@@ -51,6 +53,7 @@ static void save_document_as() { //display save dialog
 	}
 	
 	gtk_widget_destroy(dialog);
+	//TODO: set event detection to hide after close animation
 }
 
 static void new_session() {
@@ -118,7 +121,10 @@ static void new_session() {
 	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start(GTK_BOX(window_content), GTK_WIDGET(window_top_separator), FALSE, FALSE, 0);
 
-	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_widget_set_name(GTK_WIDGET(window_bottom), "window_bottom");
+	GtkWidget *window_bottom_label = gtk_label_new("window_bottom");
+	gtk_box_pack_start(GTK_BOX(window_bottom), GTK_WIDGET(window_bottom_label), TRUE, TRUE, 0);
 	gtk_box_pack_end(GTK_BOX(window_content), GTK_WIDGET(window_bottom), TRUE, TRUE, 0);
 
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets

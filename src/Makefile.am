@@ -18,7 +18,9 @@ AM_CFLAGS =\
 bin_PROGRAMS = gplotter
 
 gplotter_SOURCES = \
-	main.c
+	main.c \
+	gplotter.css \
+	gplotter.h
 
 gplotter_CFLAGS = -std=gnu11 
 

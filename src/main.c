@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
+#include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
@@ -50,7 +51,7 @@ static void new_session() {
 	gtk_window_set_application(GTK_WINDOW(window), GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-	gtk_window_set_default_size(GTK_WINDOW(window),1000,640);
+	gtk_window_set_default_size(GTK_WINDOW(window),900,560);
 	gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(window), TRUE);
 	gtk_window_set_icon_name(GTK_WINDOW(window), "application-x-executable");
 
@@ -62,29 +63,34 @@ static void new_session() {
 	gtk_container_add(GTK_CONTAINER(window), window_content);
 	gtk_box_pack_start(GTK_BOX(window_content), window_top_alignment, FALSE, FALSE, 0);
 	gtk_container_add(GTK_CONTAINER(window_top_alignment), window_top);
-	gtk_widget_set_size_request(window_top_alignment, 1000, 36);
-	gtk_widget_set_size_request(window_top, 1000, 30);
+
+	//set minimum widget sizes
+	gtk_widget_set_size_request(window_top_alignment, 400, 36);
+	gtk_widget_set_size_request(window_top, 700, 30);
+	gtk_widget_set_size_request(window_content, 700, 300);
 	
 	//top portion of window (window_top); content
 	wt_save_export_buttons_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	gtk_box_pack_start(GTK_BOX(window_top), wt_save_export_buttons_container, FALSE, FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(window_top), wt_save_export_buttons_container, FALSE, FALSE, 15);
 	wt_sebc_save = gtk_button_new();
+	gtk_widget_set_name(GTK_WIDGET(wt_sebc_save), "wt_sebc_save");
 	gtk_button_set_label(GTK_BUTTON(wt_sebc_save), "Save");
 	wt_sebc_export = gtk_button_new();
+	gtk_widget_set_name(GTK_WIDGET(wt_sebc_export), "wt_sebc_export");
 	gtk_button_set_label(GTK_BUTTON(wt_sebc_export), "Export");
 	gtk_box_pack_start(GTK_BOX(wt_save_export_buttons_container),
 	                   GTK_WIDGET(wt_sebc_save), TRUE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(wt_save_export_buttons_container),
 	                 GTK_WIDGET(wt_sebc_export), TRUE, FALSE, 0);
 	wt_equation_editor = gtk_entry_new();
-	gtk_box_pack_start(GTK_BOX(window_top), wt_equation_editor, TRUE, TRUE, 10);
+	gtk_box_pack_start(GTK_BOX(window_top), wt_equation_editor, TRUE, TRUE, 0);
 	wt_menubutton = gtk_menu_button_new();
 
 	//settings menu-button
 	gtk_button_set_use_stock (GTK_BUTTON(wt_menubutton), TRUE);
 	GtkWidget *wt_menubutton_image = gtk_image_new_from_icon_name("emblem-system-symbolic", GTK_ICON_SIZE_MENU);
 	gtk_button_set_image(GTK_BUTTON(wt_menubutton), wt_menubutton_image);
-	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 10);
+	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 15);
 	
 	//add separator to window_content
 	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
@@ -93,16 +99,7 @@ static void new_session() {
 	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_box_pack_end(GTK_BOX(window_content), GTK_WIDGET(window_bottom), TRUE, TRUE, 0);
 
-	static GdkRGBA *window_bottom_color;
-	gdk_rgba_parse(window_bottom_color, "#FFFFFF");
-	gtk_widget_override_background_color(GTK_WIDGET(window_bottom), GTK_STATE_NORMAL, window_bottom_color);
-
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
-}
-
-static void new_window() {
-	g_print("New window created.");
-	new_session(app);
 }
 
 static void quit() { //quit the program
@@ -114,7 +111,7 @@ static void quit() { //quit the program
 
 static void startup() {
 	static const GActionEntry actions[] = { //accessed by app.{name}
-		{"newwin", new_window},
+		{"newsession", new_session},
 		{"about", show_about },
 		{"quit", quit }
 	};
@@ -126,15 +123,24 @@ static void startup() {
 	g_action_map_add_action_entries(G_ACTION_MAP(app), actions, G_N_ELEMENTS(actions), app);
 	//add visible items (labels) to the menu
 	menu = g_menu_new();
-	g_menu_append(menu, "New Window", "app.newwin");
-	g_menu_append(menu,"View Log","app.viewlog");
+	g_menu_append(menu, "New Session", "app.newsession");
 	g_menu_append_section(menu, NULL, G_MENU_MODEL(about_menu));
 	gtk_application_set_app_menu(app, G_MENU_MODEL(menu));
 	g_object_unref(menu);
 }
 
 static void activate() {
-	new_session(app); //create a new session
+	new_session(); //create a new window and a new session
+	
+	//set css styling for future elements...
+	GdkDisplay *display = gdk_display_get_default();
+	GdkScreen *screen = gdk_display_get_default_screen(display);
+	GtkCssProvider *css_provider = gtk_css_provider_new();
+
+	gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_path(css_provider, "src/gplotter.css", 0);
+
+	g_object_unref(css_provider);
 }
 
 int main(int argc, char **argv) {

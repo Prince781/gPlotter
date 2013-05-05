@@ -31,6 +31,26 @@ static void show_about() { //display about dialogs
 	                      "website-label", _("GitHub Page"),
 	                      "logo-icon-name", "application-x-executable",
 	                      NULL);
+	g_object_unref(parent);
+}
+
+static void save_document_as() { //display save dialog
+	GtkWindow *parent = gtk_application_get_active_window(GTK_APPLICATION(app));
+	GtkWidget *dialog;
+	dialog = gtk_file_chooser_dialog_new("Save Document As", 
+	                                     parent, GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	                                     GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+	                                     NULL);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+		char *filename;
+		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		g_print("Document saved as \"%s\".", filename);
+		g_free(filename);
+	}
+	
+	gtk_widget_destroy(dialog);
 }
 
 static void new_session() {
@@ -75,6 +95,7 @@ static void new_session() {
 	wt_sebc_save = gtk_button_new();
 	gtk_widget_set_name(GTK_WIDGET(wt_sebc_save), "wt_sebc_save");
 	gtk_button_set_label(GTK_BUTTON(wt_sebc_save), "Save");
+	g_signal_connect(GTK_WIDGET(wt_sebc_save), "clicked", G_CALLBACK(save_document_as), NULL);
 	wt_sebc_export = gtk_button_new();
 	gtk_widget_set_name(GTK_WIDGET(wt_sebc_export), "wt_sebc_export");
 	gtk_button_set_label(GTK_BUTTON(wt_sebc_export), "Export");
@@ -83,6 +104,7 @@ static void new_session() {
 	gtk_box_pack_end(GTK_BOX(wt_save_export_buttons_container),
 	                 GTK_WIDGET(wt_sebc_export), TRUE, FALSE, 0);
 	wt_equation_editor = gtk_entry_new();
+	gtk_widget_set_name(GTK_WIDGET(wt_equation_editor), "wt_equation_editor");
 	gtk_box_pack_start(GTK_BOX(window_top), wt_equation_editor, TRUE, TRUE, 0);
 	wt_menubutton = gtk_menu_button_new();
 

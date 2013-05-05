@@ -29,7 +29,7 @@ GtkButton#wt_sebc_export {
 	border-bottom-right-radius: 5px;
 }
 
-GtkEntry {
+GtkEntry#wt_equation_editor {
 	border-radius: 0px;
 	border: none;
 	border-radius: 12px;

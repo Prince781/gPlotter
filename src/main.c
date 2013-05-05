@@ -18,6 +18,7 @@
 #include "gplotter.h" //config data
 
 GtkApplication *app;
+GtkWidget *file_dialog;
 
 static void show_about() { //display about dialogs
 	GtkWindow *parent = gtk_application_get_active_window(GTK_APPLICATION(app));
@@ -35,24 +36,24 @@ static void show_about() { //display about dialogs
 
 static void save_document_as() { //display save dialog
 	GtkWindow *parent_window = gtk_application_get_active_window(GTK_APPLICATION(app));
-	GtkWidget *dialog;
-	dialog = gtk_file_chooser_dialog_new("Save Document As", 
+	file_dialog = gtk_file_chooser_dialog_new("Save Document As", 
 	                                     parent_window,
 	                                     GTK_FILE_CHOOSER_ACTION_SAVE,
 	                                     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-	                                     GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+	                                     GTK_STOCK_SAVE_AS, GTK_RESPONSE_ACCEPT,
 	                                     NULL);
-	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
-	gtk_widget_hide_on_delete(dialog);
-	gint dlg_response = gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(file_dialog), TRUE);
+	gtk_widget_hide_on_delete(file_dialog);
+	gint dlg_response = gtk_dialog_run(GTK_DIALOG(file_dialog));
 	if (dlg_response == GTK_RESPONSE_ACCEPT) {
 		char *filename;
-		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_dialog));
 		g_print("Document saved as \"%s\".", filename);
 		g_free(filename);
 	}
 	
-	gtk_widget_destroy(dialog);
+	gtk_widget_hide(file_dialog);
+	gtk_widget_destroy(file_dialog);
 	//TODO: set event detection to hide after close animation
 }
 

@@ -109,14 +109,21 @@ static void new_session() {
 	                 GTK_WIDGET(wt_sebc_export), TRUE, FALSE, 0);
 	wt_equation_editor = gtk_entry_new();
 	gtk_widget_set_name(GTK_WIDGET(wt_equation_editor), "wt_equation_editor");
+	
 	gtk_box_pack_start(GTK_BOX(window_top), wt_equation_editor, TRUE, TRUE, 0);
 	wt_menubutton = gtk_menu_button_new();
 
 	//settings menu-button
 	gtk_button_set_use_stock (GTK_BUTTON(wt_menubutton), TRUE);
 	GtkWidget *wt_menubutton_image = gtk_image_new_from_icon_name("emblem-system-symbolic", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_name(wt_menubutton, "wt_menubutton");
 	gtk_button_set_image(GTK_BUTTON(wt_menubutton), wt_menubutton_image);
 	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 15);
+
+	//settings menu
+	GMenu *settings_menu = g_menu_new();
+	g_menu_append(settings_menu, "Testing", "settings_menu.test");
+	gtk_menu_button_set_menu_model(GTK_MENU_BUTTON(wt_menubutton), G_MENU_MODEL(settings_menu));
 	
 	//add separator to window_content
 	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
@@ -125,6 +132,7 @@ static void new_session() {
 	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_widget_set_name(GTK_WIDGET(window_bottom), "window_bottom");
 	GtkWidget *window_bottom_label = gtk_label_new("window_bottom");
+	//GtkWidget *
 	gtk_box_pack_start(GTK_BOX(window_bottom), GTK_WIDGET(window_bottom_label), TRUE, TRUE, 0);
 	gtk_box_pack_end(GTK_BOX(window_content), GTK_WIDGET(window_bottom), TRUE, TRUE, 0);
 
@@ -141,7 +149,7 @@ static void quit() { //quit the program
 static void startup() {
 	static const GActionEntry actions[] = { //accessed by app.{name}
 		{"newsession", new_session},
-		{"about", show_about },
+		{"about", show_about},
 		{"quit", quit }
 	};
 	GMenu *menu;

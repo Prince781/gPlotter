@@ -7,3 +7,8 @@ const typedef struct {
 	int width;
 	int height;
 } GPLOTTER_WINDOW_GEOMETRY;
+
+const typedef struct {
+	GPLOTTER_WINDOW_GEOMETRY window;
+	
+} GPLOTTER_SESSION;

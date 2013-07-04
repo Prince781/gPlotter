@@ -127,6 +127,7 @@ static void new_session() {
 	
 	//add separator to window_content
 	window_top_separator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_widget_set_name(window_top_separator, "wt_separator");
 	gtk_box_pack_start(GTK_BOX(window_content), GTK_WIDGET(window_top_separator), FALSE, FALSE, 0);
 
 	window_bottom = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);

@@ -5,10 +5,6 @@
 @define-color default_line_color #bcbebc;
 
 GtkEntry#wt_equation_editor {
-	border-radius: 0px;
-	border: none;
-	border-radius: 12px;
-	border: 1px solid @default_line_color;
 	padding-left: 10px;
 	padding-right: 10px;
 }
@@ -16,11 +12,12 @@ GtkEntry#wt_equation_editor {
 GtkBox#window_bottom {
 	box-shadow: 0px 0px 5px #000000;
 }
-/*
+
 GtkMenuButton#wt_menubutton {
-	border-radius: 0px;
 	border: none;
-	border-radius: 30px;
 	border: 1px solid @default_line_color;
 }
-*/
+
+GtkMenuButton#wt_menubutton:active {
+	border-bottom: none;
+}

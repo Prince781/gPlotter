@@ -20,7 +20,8 @@ bin_PROGRAMS = gplotter
 gplotter_SOURCES = \
 	main.c \
 	gplotter.css \
-	gplotter.h
+	gplotter.h \
+	gp_math.c
 
 gplotter_CFLAGS = -std=gnu11 
 

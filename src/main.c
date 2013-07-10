@@ -17,6 +17,9 @@
 #include "gplotter.h" //config data
 #include "gp_math.c"
 #include "drawing.c"
+#if GPLOTTER_DEBUG
+	#include <time.h>
+#endif
 
 GtkApplication *app;
 
@@ -32,6 +35,10 @@ static void show_about() { //display about dialogs
 	                      "website-label", _("GitHub Page"),
 	                      "logo-icon-name", "application-x-executable",
 	                      NULL);
+}
+
+static void show_settings() { //show the settings menu
+	g_print("This should show the settings menu...\n");
 }
 
 static void show_help() { //show the help documentation
@@ -62,7 +69,6 @@ static void save_document_as() { //display save dialog
 
 static void new_session() {
 	//create a new window, create a new session, and initialize widgets:
-	gPlotterSession *sess = gplotter_session_new();
 	GtkWidget *window;
 	GtkWidget *window_content;
 	GtkWidget *window_top_alignment;
@@ -84,16 +90,16 @@ static void new_session() {
 	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_default_size(GTK_WINDOW(window),900,560);
-	gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(window), TRUE);
+	gtk_window_set_hide_titlebar_when_maximized(GTK_WINDOW(window), FALSE);
 	gtk_window_set_icon_name(GTK_WINDOW(window), "application-x-executable");
 
 	//create main window content, top content
-	window_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	window_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
 	window_top_alignment = gtk_alignment_new(0, 1, 1, 0);
-	window_top = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	window_top = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 
 	//set minimum widget sizes
-	gtk_widget_set_size_request(window_top_alignment, 700, 36);
+	gtk_widget_set_size_request(window_top_alignment, 700, 30);
 	gtk_widget_set_size_request(window_top, 700, 30);
 	gtk_widget_set_size_request(window_content, 700, 300);
 
@@ -106,7 +112,10 @@ static void new_session() {
 	gtk_box_pack_start(GTK_BOX(window_top), wt_save_export_buttons_container, FALSE, FALSE, 15);
 	wt_sebc_save = gtk_button_new();
 		gtk_widget_set_name(wt_sebc_save, "wt_sebc_save");
-		gtk_button_set_label(GTK_BUTTON(wt_sebc_save), "Save");
+		//gtk_button_set_label(GTK_BUTTON(wt_sebc_save), "Save");
+		GtkWidget *wt_sebc_save_image = gtk_image_new_from_icon_name("document-save", GTK_ICON_SIZE_MENU);
+		gtk_button_set_image(GTK_BUTTON(wt_sebc_save), wt_sebc_save_image);
+		gtk_widget_set_tooltip_text(wt_sebc_save, "Save As...");
 		g_signal_connect(wt_sebc_save, "clicked", G_CALLBACK(save_document_as), NULL);
 	wt_sebc_export = gtk_button_new();
 		gtk_widget_set_name(wt_sebc_export, "wt_sebc_export");
@@ -124,13 +133,14 @@ static void new_session() {
 	//settings menu-button
 	gtk_button_set_use_stock(GTK_BUTTON(wt_menubutton), TRUE);
 	GtkWidget *wt_menubutton_image = gtk_image_new_from_icon_name("emblem-system-symbolic", GTK_ICON_SIZE_MENU);
-	gtk_widget_set_name(wt_menubutton, "wt_menubutton");
-	gtk_button_set_image(GTK_BUTTON(wt_menubutton), wt_menubutton_image);
+		gtk_widget_set_name(wt_menubutton, "wt_menubutton");
+		gtk_button_set_image(GTK_BUTTON(wt_menubutton), wt_menubutton_image);
+		gtk_widget_set_tooltip_text(wt_menubutton, "Options");
 	gtk_box_pack_start(GTK_BOX(window_top), wt_menubutton, FALSE, FALSE, 15);
 
 	//settings menu
 	GMenu *s_menu = g_menu_new();
-	g_menu_append(s_menu, "Show Derivative", "s_menu.show_derivative");
+	g_menu_append(s_menu, "Show Derivative of Selected Function", "s_menu.show_derivative");
 	GMenu *sm_funcs[2];
 	sm_funcs[0] = g_menu_new();
 	g_menu_append(sm_funcs[0], "Show Minima/Maxima", "s_menu.show_minima_maxima");
@@ -160,6 +170,10 @@ static void new_session() {
 	wb_left = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 		gtk_widget_set_name(wb_left, "wb_left");
 		gtk_widget_set_size_request(wb_left, 500, 300);
+		GdkRGBA *wb_left_bgcolor = malloc(sizeof(GdkRGBA *));
+		gdk_rgba_parse(wb_left_bgcolor, "#FFFFFF");
+		//TODO: fix background rgba forcing
+		gtk_widget_override_background_color(wb_left, GTK_STATE_FLAG_NORMAL, wb_left_bgcolor);
 	wb_separator = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 		gtk_widget_set_name(wb_separator, "wb_separator");
 	wb_right_alignment = gtk_alignment_new(1, 0, 0, 1);
@@ -179,6 +193,14 @@ static void new_session() {
 	gtk_box_pack_end(GTK_BOX(window_content), GTK_WIDGET(window_bottom), TRUE, TRUE, 0);
 
 	gtk_widget_show_all(GTK_WIDGET(window)); //show all GTK widgets
+
+	//session management...
+	gPlotterSession *gplotter_session = gplotter_session_new();
+	if (GPLOTTER_DEBUG) {
+		printf("Test value: %d. Set value: %d.\n", 3, gplotter_session_set_test_value(gplotter_session, 3));
+		printf("Value of session's test_value is %d.\n", gplotter_session_get_test_value(gplotter_session_current()));
+	}
+	//gplotter_session_set_window(gplotter_session, gtk_widget_get_window(window));
 }
 
 //end of menu functions
@@ -186,6 +208,7 @@ static void new_session() {
 static void startup() {
 	static const GActionEntry actions[] = { //accessed by app.{name}
 		{"newsession", new_session},
+		{"settings", show_settings},
 		{"help", show_help},
 		{"about", show_about},
 		{"quit", quit}
@@ -200,6 +223,7 @@ static void startup() {
 	//add visible items (labels) to the menu
 	menu = g_menu_new();
 	g_menu_append(menu, "New Session", "app.newsession");
+	g_menu_append(menu, "Settings", "app.settings");
 	g_menu_append_section(menu, NULL, G_MENU_MODEL(about_menu));
 	gtk_application_set_app_menu(app, G_MENU_MODEL(menu));
 	g_object_unref(menu);
@@ -220,7 +244,6 @@ static void activate() {
 }
 
 int main(int argc, char **argv) {
-	printf("Found a value: %f\n", find_convergence());
 	int status;
 	
 	app = gtk_application_new("org.gtk.gPlotter",G_APPLICATION_FLAGS_NONE);

@@ -9,6 +9,7 @@ gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cair
 
 ##Feature List
 * Implementation of basic UI controls and menus ( **started** )
+* Implementation of session management and framework ( **started** )
 * Cartesian graphing and plotting in two dimensions ( **todo** )
 * Analysis Capabilities ( **todo** )
   - Minima/Maxima ( **todo** )

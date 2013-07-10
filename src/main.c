@@ -14,9 +14,9 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
-#include <cairo.h>
 #include "gplotter.h" //config data
 #include "gp_math.c"
+#include "drawing.c"
 
 GtkApplication *app;
 
@@ -26,7 +26,7 @@ static void show_about() { //display about dialogs
 	                      "comments", _("A useful program for graphing the output of functions."),
 	                      "copyright", _("Copyright \xc2\xa9 2013 Princeton Ferro"),
 	                      "program-name", _("gPlotter"),
-	                      "version", GPLOTTER_VERSION_STRING,
+	                      "version", GPLOTTER_VERSION,
 	                      "website", _("https://github.com/Prince781/gPlotter"),
 	                      "license-type", GTK_LICENSE_GPL_2_0,
 	                      "website-label", _("GitHub Page"),
@@ -62,6 +62,7 @@ static void save_document_as() { //display save dialog
 
 static void new_session() {
 	//create a new window, create a new session, and initialize widgets:
+	gPlotterSession *sess = gplotter_session_new();
 	GtkWidget *window;
 	GtkWidget *window_content;
 	GtkWidget *window_top_alignment;

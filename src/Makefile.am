@@ -21,7 +21,8 @@ gplotter_SOURCES = \
 	main.c \
 	gplotter.css \
 	gplotter.h \
-	gp_math.c
+	gp_math.c \
+	drawing.c
 
 gplotter_CFLAGS = -std=gnu11 
 

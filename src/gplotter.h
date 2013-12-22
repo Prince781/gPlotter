@@ -8,8 +8,9 @@
 #define GPLOTTER_VERSION "0.9 (Alpha)"
 #define GPLOTTER_MAX_SESSIONS 30
 
-#define false 0
-#define true !false
+enum { false, true };
+typedef int bool;
+
 #define GPLOTTER_DEBUG true
 
 static int current_gplotter_session = 0;

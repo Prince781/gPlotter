@@ -4,12 +4,10 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <cairo.h>
+#include <stdbool.h>
 
 #define GPLOTTER_VERSION "0.9 (Alpha)"
 #define GPLOTTER_MAX_SESSIONS 30
-
-enum { false, true };
-typedef int bool;
 
 #define GPLOTTER_DEBUG true
 

@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 		{ 3, 'x', 1 }
 	};
 	
+	
 	// test equations
 	polyn polynom = {
 		.length = 2,

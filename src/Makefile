@@ -7,7 +7,8 @@ CFLAGS=-std=c99 -lm -o $(BIN)/$(PROGRAM)
 CFILES=$(shell find . -type f -name '*.c')
 
 all: $(CFILES)
-	$(CC) $(CFLAGS) $(CFILES) 
+	$(CC) $(CFLAGS) $(CFILES)
+# @mv a.out $(BIN)/$(PROGRAM)
 
 clean:
 	rm -f $(BIN)/$(PROGRAM)

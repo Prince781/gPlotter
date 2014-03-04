@@ -21,4 +21,4 @@ polynomial to_polynomial(char *eq);
 /**
  * Converts a polynomial into a textual representation of an equation.
  */
-char *to_equation_text(polynomial poly);
+char *to_equation_text(polynomial *poly);

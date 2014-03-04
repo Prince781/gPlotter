@@ -20,8 +20,9 @@ int main(int argc, char **argv) {
 	};
 	
 	// test equations
-	polynomial p = { .length = 2 };
-	p.monos = ms;
+	polynomial *p = malloc(sizeof(polynomial));
+	p->length = 2;
+	p->monos = ms;
 	
 	char *eq = to_equation_text(p);
 	

@@ -1,26 +1,24 @@
-// gpmath.h
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
-/* Declares a monomial. */
-typedef struct monomial {
-	float c; // our coefficient
-	char v; // our variable name
-	float e; // our exponent
-} monon;
+typedef struct {
+	float coef; // coefficient
+	char var; // variable name
+	float exp; // exponent
+} monomial;
 
-/* Declares a polynomial. */
-typedef struct polynomial {
-	const int length;
-	const monon *m; // monomials
-} polyn;
+typedef struct {
+	int length;
+	monomial *monos; // the monomials that make up this polynomial
+} polynomial;
 
 /**
  * Converts the textual form of an equation into a polynomial.
  */
-extern polyn to_polynomial(char *eq);
+polynomial to_polynomial(char *eq);
 
 /**
  * Converts a polynomial into a textual representation of an equation.
  */
-extern char *to_equation_text(const polyn poly);
+char *to_equation_text(polynomial *poly);

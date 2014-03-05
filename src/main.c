@@ -14,19 +14,17 @@ int main(int argc, char **argv) {
 	// TODO: add GTK 3.11 code here
 	
 	// f(x) = x^2 + 3x^1
-	monon ms[2] = {
+	monomial ms[2] = {
 		{ 1, 'x', 2 },
 		{ 3, 'x', 1 }
 	};
 	
-	
 	// test equations
-	polyn polynom = {
-		.length = 2,
-		.m = ms
-	};
+	polynomial *p = malloc(sizeof(polynomial));
+	p->length = 2;
+	p->monos = ms;
 	
-	char *eq = to_equation_text(polynom);
+	char *eq = to_equation_text(p);
 	
 	printf("Equation: %s\n", eq);
 	

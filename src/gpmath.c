@@ -1,19 +1,36 @@
+#define ERRBUFSIZE 30
 #include "gpmath.h"
 #include <regex.h>
 
-/*
-polynomial to_polynomial(const char *eq) {
+int to_polynomial(const char *eq) {
 	polynomial p = {
-		.length = NULL,
-		.monos = NULL
+		.length = 0
 	};
+	
 	regex_t regex;
-	int reti = regcomp(&regex, "((\d[\.]?\d*)[A-Za-z][\^](\d[\.]?\d*))", 0);
-	if (reti) return p; // regex compilation failed
+	regmatch_t pmatch[100]; // the length of our match
+	const char *pattern = "([0-9]\\.[0-9]+)";
+	
+	int res, len;
+	char err_buf[ERRBUFSIZE];
+	if ((res = regcomp(&regex, pattern, REG_EXTENDED)) != 0) {
+		regerror(res, &regex, err_buf, ERRBUFSIZE);
+		printf("regcomp: %s\n", err_buf);
+		return -1;
+	}
+	
+	res = regexec(&regex, eq, 100, pmatch, 0);
+	if (res == REG_NOMATCH) {
+		// printf("Input: \"%s\" Query: \"%s\" - No match.\n", eq, pattern);
+		return -1;
+	}
+	
+	int matlen = 0;
+	for (int i=0; pmatch[i].rm_so != -1; i++) matlen++;
+	
 	// TODO: regex
+	return matlen;
 }
-
-*/
 
 char *to_equation_text(polynomial *poly) {
 	char *eq = malloc(7 + poly->length * (7+1+1+7+1));

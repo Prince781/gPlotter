@@ -28,5 +28,10 @@ int main(int argc, char **argv) {
 	
 	printf("Equation: %s\n", eq);
 	
+	// test conversion back to polynomial
+	int n = to_polynomial(eq);
+	
+	printf("n (number of matches) = %d\n", n);
+	
 	return 0;
 }

@@ -16,9 +16,9 @@ typedef struct {
 /**
  * Converts the textual form of an equation into a polynomial.
  */
-polynomial to_polynomial(char *eq);
+extern int to_polynomial(const char *eq);
 
 /**
  * Converts a polynomial into a textual representation of an equation.
  */
-char *to_equation_text(polynomial *poly);
+extern char *to_equation_text(polynomial *poly);

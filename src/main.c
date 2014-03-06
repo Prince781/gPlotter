@@ -9,6 +9,7 @@
 *************************************************/
 
 #include "gpmath.h"
+#include "window.h"
 
 int main(int argc, char **argv) {
 	// TODO: add GTK 3.11 code here
@@ -33,5 +34,9 @@ int main(int argc, char **argv) {
 	
 	printf("n (number of matches) = %d\n", n);
 	
-	return 0;
+	// initialize GUI:
+	int *s = gtkapp_initialize(argc, argv);
+	//gtkapp_activate();
+	
+	return *s;
 }

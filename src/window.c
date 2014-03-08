@@ -29,6 +29,7 @@ void gtkapp_startup() {
 	// add menu
 	menu = g_menu_new();
 	g_menu_append(menu, "New Session", "app.newsession");
+	g_menu_append_section(menu, NULL, G_MENU_MODEL(about_menu));
 	gtk_application_set_app_menu(app, G_MENU_MODEL(menu));
 	g_object_unref(menu);
 }
@@ -38,8 +39,7 @@ void gtkapp_activate() {
 	GdkScreen *screen = gdk_display_get_default_screen(display);
 	// TODO: *potentially* add CSS loading here
 	
-	GtkWindow *window;
-	window = gtk_application_window_new(app);
+	GtkWindow *window = gtk_application_window_new(app);
 	
 	gtk_widget_show_all(GTK_WIDGET(window));
 }

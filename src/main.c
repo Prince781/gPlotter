@@ -35,8 +35,7 @@ int main(int argc, char **argv) {
 	printf("n (number of matches) = %d\n", n);
 	
 	// initialize GUI:
-	int *s = gtkapp_initialize(argc, argv);
-	//gtkapp_activate();
+	int *status = gtkapp_initialize(argc, argv);
 	
-	return *s;
+	return *status;
 }

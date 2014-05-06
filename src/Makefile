@@ -2,15 +2,21 @@
 CC=gcc
 PROGRAM=gplotter
 BIN=bin
-CFLAGS := $(shell pkg-config --cflags glib-2.0 gtk+-3.0) -std=c99 -lm
+CFLAGS := $(shell pkg-config --cflags glib-2.0 gtk+-3.0) -g -Wall -std=c99 -lm
 LDFLAGS := $(shell pkg-config --libs glib-2.0 gtk+-3.0)
-# resources
-CFILES=$(shell find . -type f -name '*.c')
 
-all: $(CFILES)
-	$(CC) $(CFLAGS) $(CFILES) $(LDFLAGS)
+all: window.o gpmath.o main.o
 	@if [ ! -d $(BIN) ]; then mkdir $(BIN); fi
-	@mv a.out $(BIN)/$(PROGRAM)
+	@$(CC) $(CFLAGS) -o $(BIN)/$(PROGRAM) main.o window.o gpmath.o $(LDFLAGS)
+
+main.o: main.c
+	@$(CC) $(CFLAGS) -c main.c
+
+window.o: window.c window.h gplotter.h
+	@$(CC) $(CFLAGS) -c window.c
+
+gpmath.o: gpmath.c gpmath.h
+	@$(CC) $(CFLAGS) -c gpmath.c
 
 clean:
-	rm -f $(BIN)/$(PROGRAM)
+	rm -f *.o *~ $(BIN)/$(PROGRAM) 

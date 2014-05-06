@@ -7,6 +7,7 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
+#include <cairo.h>
 
 extern GtkApplication *app; // our GTK application
 

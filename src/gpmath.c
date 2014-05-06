@@ -2,7 +2,7 @@
 #include "gpmath.h"
 #include <regex.h>
 
-int to_polynomial(const char *eq) {
+polynomial to_polynomial(const char *eq) {
 	polynomial p = {
 		.length = 0
 	};
@@ -29,7 +29,7 @@ int to_polynomial(const char *eq) {
 	for (int i=0; pmatch[i].rm_so != -1; i++) matlen++;
 	
 	// TODO: regex
-	return matlen;
+	return p;
 }
 
 char *to_equation_text(polynomial *poly) {

@@ -59,6 +59,13 @@ void gtkapp_activate() {
 	
 	GtkWidget *window = gtk_application_window_new(app);
 	
+	// draw main window components
+	gtk_window_set_title(GTK_WINDOW(window), "gPlotter");
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	gtk_window_set_default_size(GTK_WINDOW(window), 1000, 640);
+	
+	// TODO create content for main window
+	
 	gtk_widget_show_all(GTK_WIDGET(window));
 }
 

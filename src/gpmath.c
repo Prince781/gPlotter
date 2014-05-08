@@ -1,14 +1,17 @@
-#define ERRBUFSIZE 30
-#include "gpmath.h"
+#define MONOBUFFSIZE 100
+#include "gpmath.h" // gpmath
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 polynomial *to_polynomial(const char *eq) {
 	polynomial *p = malloc(sizeof(polynomial));
-	monomial monos[100]; // buffered monomials (maximum)
-	
+	monomial monos[MONOBUFFSIZE]; // buffered monomials (maximum)
+
 	int m;
 	// monos[0] = malloc(sizeof(monomial));
-	for (m=0; m<100 && 
-		sscanf(eq, "%f%c^%f", monos[m].coef,monos[m].var,monos[m].exp) != EOF;
+	for (m=0; m<MONOBUFFSIZE && 
+		sscanf(eq, "%f%c^%f", &monos[m].coef, &monos[m].var, &monos[m].exp) != EOF;
 	m++);
 	
 	monomial nmonos[m]; // copy monomials
@@ -31,7 +34,7 @@ char *to_equation_text(polynomial *poly) {
 
 	strcpy(eq, "f(x) = ");
 
-	for (int i=0; i < poly->length; i++) {
+	for (int i=0; i<poly->length; i++) {
 		char temp[7+1+1+7]; //float char ^ float
 		sprintf(temp, "%3.3f%c^%3.3f", poly->monos[i].coef, 
 				poly->monos[i].var, poly->monos[i].exp);

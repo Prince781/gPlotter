@@ -41,8 +41,7 @@ int main(int argc, char **argv) {
 	printf("\n");
 
 	// initialize GUI:
-	int *s = gtkapp_initialize(argc, argv);
-	//gtkapp_activate();
-	
-	return *s;
+	int *status = gtkapp_initialize(argc, argv);
+
+	return *status;
 }

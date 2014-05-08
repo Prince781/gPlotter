@@ -30,10 +30,16 @@ int main(int argc, char **argv) {
 	printf("Equation: %s\n", eq);
 	
 	// test conversion back to polynomial
-	int n = to_polynomial(eq);
 	
-	printf("n (number of matches) = %d\n", n);
+	polynomial *poly = to_polynomial(eq);
 	
+	int i;
+	printf("Converted equation: ");
+	for (i=0; i<2; i++, printf(" + "))
+		printf("%3.3f%c^%3.3f", poly->monos[i].coef, poly->monos[i].var,
+			poly->monos[i].exp);
+	printf("\n");
+
 	// initialize GUI:
 	int *s = gtkapp_initialize(argc, argv);
 	//gtkapp_activate();

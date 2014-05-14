@@ -9,15 +9,15 @@ polynomial *to_polynomial(const char *eq) {
 	monomial monos[MONOBUFFSIZE]; // buffered monomials (maximum)
 
 	int m;
-	// monos[0] = malloc(sizeof(monomial));
-	for (m=0; m<MONOBUFFSIZE && 
-		sscanf(eq, "%f%c^%f", &monos[m].coef, &monos[m].var, &monos[m].exp) != EOF;
+	for (m=0; m<MONOBUFFSIZE
+		&& sscanf(eq, "%f", &monos[m].coef) != EOF
+		&& sscanf(eq, "%c", &monos[m].var) != EOF
+		&& sscanf(eq, "%f ", &monos[m].exp) != EOF;
 	m++);
 	
 	monomial nmonos[m]; // copy monomials
 	int i;
 	for (i=0; i<m; i++) {
-		// nmonos[i] = malloc(sizeof(monomial));
 		nmonos[i].coef = monos[i].coef;
 		nmonos[i].var = monos[i].var;
 		nmonos[i].exp = monos[i].exp;

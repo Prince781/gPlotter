@@ -2,6 +2,8 @@
 #include "window.h"
 #include "gplotter.h"
 
+// TODO implement GTK 3.12 code here
+
 GtkApplication *app;
 int gtkapp_status;
 

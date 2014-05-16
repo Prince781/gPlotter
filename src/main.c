@@ -10,10 +10,10 @@
 
 #include "gpmath.h"
 #include "window.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-int main(int argc, char **argv) {
-	// TODO: add GTK 3.11 code here
-	
+int main(int argc, char **argv) {	
 	// f(x) = x^2 + 3x^1
 	monomial ms[2] = {
 		{ 1, 'x', 2 },

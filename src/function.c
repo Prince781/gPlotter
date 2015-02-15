@@ -14,8 +14,13 @@
 #define F_ACOS	4005
 #define F_ATAN	4006
 #define F_ABS	4007
-#define F_LN	4010
-#define F_LOG10	4011
+#define F_ERF	4008
+#define F_FLOOR 4009
+#define F_CEIL	4010
+#define F_LN	4011
+#define F_LOG10	4012
+#define F_ROUND 4013
+#define F_FACT	4014
 /* functions */
 
 #define is_operand(c) (isalnum(c) || c == '.')
@@ -47,15 +52,21 @@
 (c == F_ACOS ? &acos : \
 (c == F_ATAN ? &atan : \
 (c == F_ABS ? &fabs : \
+(c == F_ERF ? &erf : \
+(c == F_FLOOR ? &floor : \
+(c == F_CEIL ? &ceil : \
 (c == F_LN ? &log : \
-(c == F_LOG10 ? &log10 : 0 \
-)))))))))
+(c == F_LOG10 ? &log10 : \
+(c == F_ROUND ? &round : \
+(c == F_FACT ? &fact : 0 \
+))))))))))))))
 
 static const char *parse_func(const char *s, int *op);
 static double mult(double, double);
 static double div(double, double);
 static double add(double, double);
 static double sub(double, double);
+static double fact(double);
 static const char *parse_num(const char *s, double *val);
 
 double function_eval(function *f) {
@@ -91,6 +102,8 @@ double function_eval(function *f) {
 				op1 = stack_pop(operands);
 				if (o > F_START)
 					val = (*_func(o))(op1);
+				else if (o == '-' && stack_empty(operands))
+					val = -op1;
 				else {
 					op2 = stack_pop(operands);
 					val = (*_opfunc(o))(op2, op1);
@@ -100,12 +113,13 @@ double function_eval(function *f) {
 			stack_push(operators, *p);
 			++p;
 		} else if (*p == ')') {
-// TODO: fix handling of parentheses (treat them as operators, instead)
 			while (stack_peek(operators) != '(') {
 				o = stack_pop(operators);
 				op1 = stack_pop(operands);
 				if (o > F_START)
 					val = (*_func(o))(op1);
+				else if (o == '-' && stack_empty(operands))
+					val = -op1;
 				else {
 					op2 = stack_pop(operands);
 					val = (*_opfunc(o))(op2, op1);
@@ -121,6 +135,8 @@ double function_eval(function *f) {
 		op1 = stack_pop(operands);
 		if (o > F_START)
 			val = (*_func(o))(op1);
+		else if (o == '-' && stack_empty(operands))
+			val = -op1;
 		else {
 			op2 = stack_pop(operands);
 			val = (*_opfunc(o))(op2, op1);
@@ -147,6 +163,19 @@ static double add(double a, double b) {
 
 static double sub(double a, double b) {
 	return a-b;
+}
+
+static double fact(double n) {
+	long v = n;
+	if (v < 2) return 1;
+	long r = (v % 2) ? 1 + v/2 : 1;	// if odd
+	long p = v, a = v, b = v-2;
+	while (b > 1) {
+		p *= a + b;
+		a += b;
+		b -= 2;
+	}
+	return p * r;	// multiply by mid
 }
 
 static const char *parse_num(const char *s, double *val) {
@@ -185,6 +214,15 @@ static const char *parse_func(const char *s, int *op) {
 	} else if (strncmp(s, "abs", 3) == 0) {
 		*op = F_ABS;
 		return s + 3;
+	} else if (strncmp(s, "erf", 3) == 0) {
+		*op = F_ERF;
+		return s + 3;
+	} else if (strncmp(s, "floor", 5) == 0) {
+		*op = F_FLOOR;
+		return s + 5;
+	} else if (strncmp(s, "ceil", 4) == 0) {
+		*op = F_CEIL;
+		return s + 4;
 	} else if (strncmp(s, "log10", 5) == 0) {
 		*op = F_LOG10;
 		return s + 5;
@@ -194,6 +232,12 @@ static const char *parse_func(const char *s, int *op) {
 	} else if (strncmp(s, "log", 3) == 0) {
 		*op = F_LN;
 		return s + 3;
+	} else if (strncmp(s, "round", 5) == 0) {
+		*op = F_ROUND;
+		return s + 5;
+	} else if (*s == '!') {
+		*op = F_FACT;
+		return s + 1;
 	} else
 		return s;
 }

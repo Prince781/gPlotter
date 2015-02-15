@@ -22,6 +22,8 @@
 #define F_LOG10	4012
 #define F_ROUND 4013
 #define F_FACT	4014
+#define F_SQRT	4015
+#define F_CBRT	4016
 /* functions */
 
 #define is_operand(c) (isalnum(c) || c == '.')
@@ -59,8 +61,10 @@
 (c == F_LN ? &log : \
 (c == F_LOG10 ? &log10 : \
 (c == F_ROUND ? &round : \
-(c == F_FACT ? &fact : 0 \
-))))))))))))))
+(c == F_FACT ? &fact : \
+(c == F_SQRT ? &sqrt : \
+(c == F_CBRT ? &cbrt : 0 \
+))))))))))))))))
 
 static const char *parse_func(const char *s, int *op);
 static double mult(double, double);
@@ -256,6 +260,12 @@ static const char *parse_func(const char *s, int *op) {
 	} else if (*s == '!') {
 		*op = F_FACT;
 		return s + 1;
+	} else if (strncmp(s, "sqrt", 4) == 0) {
+		*op = F_SQRT;
+		return s + 4;
+	} else if (strncmp(s, "cbrt", 4) == 0) {
+		*op = F_CBRT;
+		return s + 4;
 	} else
 		return s;
 }

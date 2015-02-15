@@ -8,14 +8,12 @@ A neat little program for displaying the output of functions in various ways, am
 gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cairo libraries for UI element and graphics rendering, respectively.
 
 ##Feature List
-* Implementation of basic UI controls and menus ( **started** )
-* Implementation of session management and framework ( **started** )
-* Cartesian graphing and plotting in two dimensions ( **todo** )
-* Analysis Capabilities ( **todo** )
-  - Minima/Maxima ( **todo** )
-  - Slope/Derivative ( **todo** )
-  - Inflection Point ( **todo** )
-  - Conic Section Tools (foci, radius) ( **todo** )
+* REPL ( **in progress** )
+* GUI ( **todo** )
+* Core ( **in progress** )
+  - Evaluating infix statements ( **done** )
+  - Value substitution for variables ( **todo** )
+  - Implicit functions ( **todo** )
 * Exporting and Saving ( **todo** )
   - Export ( **todo** )
     - PNG ( **todo** )

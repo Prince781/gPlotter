@@ -1,47 +1,21 @@
-/************************************************
- * GPlotter - version 0.1 alpha
- * A neat little program for displaying the
- * output of functions in various ways, among
- * them, as a representation along a Cartesian
- * plane in two-dimensional space.
- * ++++++++++++++++++++++++++++++++++++++++++++++
- * 2014 Princeton Ferro
-*************************************************/
-
-#include "gpmath.h"
-#include "window.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include "function.h"
 
-int main(int argc, char **argv) {	
-	// f(x) = x^2 + 3x^1
-	monomial ms[2] = {
-		{ 1, 'x', 2 },
-		{ 3, 'x', 1 }
-	};
-	
-	// test equations
-	polynomial *p = malloc(sizeof(polynomial));
-	p->length = 2;
-	p->monos = ms;
-	
-	char *eq = to_equation_text(p);
-	
-	printf("Equation: %s\n", eq);
-	
-	// test conversion back to polynomial
-	
-	polynomial *poly = to_polynomial(eq);
-	
-	int i;
-	printf("Converted equation: ");
-	for (i=0; i<2; i++, printf(" + "))
-		printf("%3.3f%c^%3.3f", poly->monos[i].coef, poly->monos[i].var,
-			poly->monos[i].exp);
-	printf("\n");
+int main(int argc, char *argv[]) {
+	char *str;
+	double val;
+	function f;
 
-	// initialize GUI:
-	int *status = gtkapp_initialize(argc, argv);
+	while ((str = readline("eval: ")) != NULL) {
+		f.descr = str;
+		f.len = strlen(f.descr);
+		val = function_eval(&f);
+		printf("val = %lf\n", val);
+		free(str);
+	}
 
-	return *status;
-}
+	return 0;
+}	

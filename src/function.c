@@ -13,6 +13,7 @@
 #define F_ASIN	4004
 #define F_ACOS	4005
 #define F_ATAN	4006
+#define F_ABS	4007
 #define F_LN	4010
 #define F_LOG10	4011
 /* functions */
@@ -44,9 +45,10 @@
 (c == F_ASIN ? &asin : \
 (c == F_ACOS ? &acos : \
 (c == F_ATAN ? &atan : \
+(c == F_ABS ? &fabs : \
 (c == F_LN ? &log : \
 (c == F_LOG10 ? &log10 : 0 \
-))))))))
+)))))))))
 
 static const char *parse_func(const char *s, int *op);
 static double mult(double, double);
@@ -181,6 +183,9 @@ static const char *parse_func(const char *s, int *op) {
 	} else if (strncmp(s, "atan", 4) == 0) {
 		*op = F_ATAN;
 		return s + 4;
+	} else if (strncmp(s, "abs", 3) == 0) {
+		*op = F_ABS;
+		return s + 3;
 	} else if (strncmp(s, "log", 3) == 0) {
 		*op = F_LN;
 		return s + 3;

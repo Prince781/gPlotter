@@ -66,6 +66,10 @@
 (c == F_CBRT ? &cbrt : 0 \
 ))))))))))))))))
 
+#define is_var(c,vars) (strchr(vars,c) != NULL)
+
+#define var(c,f) (strchr((f)->vars,c) - (f)->vars)
+
 static const char *parse_func(const char *s, int *op);
 static double mult(double, double);
 static double fdiv(double, double);
@@ -91,7 +95,7 @@ function *function_new(const char *descr, const char *vars) {
 	return f;
 }
 
-double function_eval(function *f) {
+double function_eval(function *f, double *vals) {
 	double res = 0;
 	const char *p, *p2;
 	struct stack_double *operands;
@@ -111,7 +115,10 @@ double function_eval(function *f) {
 				stack_push(operands, val);
 				p = p2;
 			} else {
-				stack_push(operands, *p);
+				if (f->vars != NULL && is_var(*p, f->vars))
+					stack_push(operands, vals[var(*p,f)]);
+				else 
+					stack_push(operands, *p);
 				++p;
 			}
 		} else if (is_operator(*p) || *p == '(') {

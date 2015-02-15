@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
 	while ((str = readline("eval: ")) != NULL) {
 		f = function_new(str, NULL);
-		val = function_eval(f);
+		val = function_eval(f, NULL);
 		printf("val = %lf\n", val);
 		add_history(str);
 		free(str);

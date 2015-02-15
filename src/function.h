@@ -16,7 +16,16 @@ typedef double (*op_2)(double, double);
 
 function *function_new(const char *descr, const char *vars);
 
-double function_eval(function *f);
+/**
+* @brief evaluates a function
+*
+* @param f a function
+* @param vals a set of values, or NULL. Length of vals must be equal
+* to f->nvars.
+*
+* @return 
+*/
+double function_eval(function *f, double *vals);
 
 void function_destroy(function *f);
 

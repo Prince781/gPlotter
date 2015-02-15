@@ -24,11 +24,12 @@
 (c == '*' || c == '-' || c == '+' || c == '/' || c == '^')
 
 #define precedence(c) \
--(c == '^' ? 1 : \
-(c == '*' || c == '/' ? 2 : \
-(c == '+' || c == '-' ? 3 : \
-(c > F_START ? -F_START : 4 \
-))))
+-(c == '(' || c == ')' ? 1 : \
+(c == '^' ? 2 : \
+(c == '*' || c == '/' ? 3 : \
+(c == '+' || c == '-' ? 4 : \
+(c > F_START ? -F_START : 5 \
+)))))
 
 #define _opfunc(c) \
 (c == '*' ? &mult : \
@@ -72,7 +73,7 @@ double function_eval(function *f) {
 		if ((p2 = parse_func(p,&o)) > p) {
 			stack_push(operators, o);
 			p = p2;
-		} else if (is_operand(*p) || *p == '(') {
+		} else if (is_operand(*p)) {
 			if ((p2 = parse_num(p,&val)) > p) {
 				stack_push(operands, val);
 				p = p2;
@@ -80,10 +81,12 @@ double function_eval(function *f) {
 				stack_push(operands, *p);
 				++p;
 			}
-		} else if (is_operator(*p)) {
-			while (!stack_empty(operators) &&
-				(precedence((o=stack_peek(operators))) 
-				>= precedence(*p) || o > F_START)) {
+		} else if (is_operator(*p) || *p == '(') {
+			while (!stack_empty(operators) && *p != '(') {
+				o = stack_peek(operators);
+				if (precedence(o) < precedence(*p) 
+				 && o <= F_START || o == '(')
+					break;
 				o = stack_pop(operators);
 				op1 = stack_pop(operands);
 				if (o > F_START)
@@ -98,7 +101,7 @@ double function_eval(function *f) {
 			++p;
 		} else if (*p == ')') {
 // TODO: fix handling of parentheses (treat them as operators, instead)
-			while (stack_peek(operands) != '(') {
+			while (stack_peek(operators) != '(') {
 				o = stack_pop(operators);
 				op1 = stack_pop(operands);
 				if (o > F_START)
@@ -107,14 +110,9 @@ double function_eval(function *f) {
 					op2 = stack_pop(operands);
 					val = (*_opfunc(o))(op2, op1);
 				}
-				op3 = stack_peek(operands);
-				if ((int)op3 == '(') {
-					stack_pop(operands);
-					stack_push(operands, val);
-					break;
-				} else
-					stack_push(operands, val);
+				stack_push(operands, val);
 			}
+			stack_pop(operators);
 			++p;
 		} else
 			++p;

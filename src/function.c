@@ -97,6 +97,7 @@ double function_eval(function *f) {
 			stack_push(operators, *p);
 			++p;
 		} else if (*p == ')') {
+// TODO: fix handling of parentheses (treat them as operators, instead)
 			while (stack_peek(operands) != '(') {
 				o = stack_pop(operators);
 				op1 = stack_pop(operands);
@@ -186,15 +187,15 @@ static const char *parse_func(const char *s, int *op) {
 	} else if (strncmp(s, "abs", 3) == 0) {
 		*op = F_ABS;
 		return s + 3;
-	} else if (strncmp(s, "log", 3) == 0) {
-		*op = F_LN;
-		return s + 3;
-	} else if (strncmp(s, "ln", 2) == 0) {
-		*op = F_LN;
-		return s + 2;
 	} else if (strncmp(s, "log10", 5) == 0) {
 		*op = F_LOG10;
 		return s + 5;
+	} else if (strncmp(s, "ln", 2) == 0) {
+		*op = F_LN;
+		return s + 2;
+	} else if (strncmp(s, "log", 3) == 0) {
+		*op = F_LN;
+		return s + 3;
 	} else
 		return s;
 }

@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "function.h"
 #include "ds/stack.h"
@@ -38,7 +39,7 @@
 
 #define _opfunc(c) \
 (c == '*' ? &mult : \
-(c == '/' ? &div : \
+(c == '/' ? &fdiv : \
 (c == '+' ? &add : \
 (c == '-' ? &sub : \
 (c == '^' ? &pow : 0 \
@@ -63,11 +64,28 @@
 
 static const char *parse_func(const char *s, int *op);
 static double mult(double, double);
-static double div(double, double);
+static double fdiv(double, double);
 static double add(double, double);
 static double sub(double, double);
 static double fact(double);
 static const char *parse_num(const char *s, double *val);
+
+function *function_new(const char *descr, const char *vars) {
+	function *f;
+
+	f = malloc(sizeof(*f));
+	f->descr = strdup(descr);
+	f->len = strlen(f->descr);
+	if (vars) {
+		f->vars = strdup(vars);
+		f->nvars = strlen(f->vars);
+	} else {
+		f->vars = NULL;
+		f->nvars = 0;
+	}
+
+	return f;
+}
 
 double function_eval(function *f) {
 	double res = 0;
@@ -153,7 +171,7 @@ static double mult(double a, double b) {
 	return a*b;
 }
 
-static double div(double a, double b) {
+static double fdiv(double a, double b) {
 	return a/b;
 }
 
@@ -240,4 +258,11 @@ static const char *parse_func(const char *s, int *op) {
 		return s + 1;
 	} else
 		return s;
+}
+
+void function_destroy(function *f) {
+	free(f->descr);
+	if (f->vars)
+		free(f->vars);
+	free(f);
 }

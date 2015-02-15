@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c11
+CFLAGS=-D_DEFAULT_SOURCE -std=c11
 LDFLAGS=-lm -lreadline
 PROGRAM=gPlotter
 SOURCES=$(shell find . -type f -name \*.c)

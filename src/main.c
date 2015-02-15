@@ -7,14 +7,15 @@
 int main(int argc, char *argv[]) {
 	char *str;
 	double val;
-	function f;
+	function *f;
 
 	while ((str = readline("eval: ")) != NULL) {
-		f.descr = str;
-		f.len = strlen(f.descr);
-		val = function_eval(&f);
+		f = function_new(str, NULL);
+		val = function_eval(f);
 		printf("val = %lf\n", val);
+		add_history(str);
 		free(str);
+		function_destroy(f);
 	}
 
 	return 0;

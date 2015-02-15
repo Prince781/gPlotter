@@ -78,6 +78,8 @@ static double sub(double, double);
 static double fact(double);
 static const char *parse_num(const char *s, double *val);
 
+struct stack_void_ptr *defined_funcs = NULL;
+
 function *function_new(const char *descr, const char *vars) {
 	function *f;
 
@@ -282,4 +284,18 @@ void function_destroy(function *f) {
 	if (f->vars)
 		free(f->vars);
 	free(f);
+}
+
+void function_save(function *f) {
+	if (defined_funcs == NULL)
+		defined_funcs = stack_void_ptr_new(10);
+	function *fnew = malloc(sizeof(*fnew));
+	memcpy(fnew, f, sizeof(*f));
+	stack_push(defined_funcs, fnew);
+}
+
+int function_remove(function *f) {
+	if (defined_funcs == NULL || stack_empty(defined_funcs))
+		return -1;
+// TODO		
 }

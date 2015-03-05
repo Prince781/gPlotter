@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
 
 	double vs[] = {10, 11, 12};
 	f = function_new("x^2 + y^2 + z^2", "xyz");
-	printf("evaluating test function: %s\n", (char *)f);
+	printf("evaluating test function: %s\n", *(char **)f);
 	val = function_eval(f, vs);
 	while ((str = readline("eval: ")) != NULL) {
 		f = function_new(str, NULL);

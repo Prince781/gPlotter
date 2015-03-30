@@ -301,11 +301,21 @@ double function_eval(function *f, double *vals) {
 			} else 
 				stack_pop(operators);	// pop '('
 			++p;
-		} else if (isalpha(*p)) {
-			fprintf(stderr, 
-				"%s: undefined function, expression, or variable '%c'\n",
-				__func__, *p);
-			++p;
+		} else if (isgraph(*p)) {
+			size_t elen;
+			char *expr_str = get_word(p, &elen);
+			if (elen > 0) {
+				fprintf(stderr, "%s: undefined function, "
+					"expression, operator, or variable '%s'\n",
+					__func__, expr_str);
+				p += elen;
+			} else {
+				fprintf(stderr, "%s: undefined function, "
+					"expression, operator, or variable '%c'\n",
+					__func__, *p);
+				++p;
+			}
+			free(expr_str);
 			goto end;
 		} else
 			++p;

@@ -14,7 +14,9 @@ static int var_compare_by_name(const void *v1, const void *v2);
 static const variable default_vars[] = {
 	{ "e", M_E, 0 },
 	{ "pi", M_PI, 0 },
-	{ "phi", PHI, 0 }
+	{ "phi", PHI, 0 },
+	{ "Inf", INFINITY, 0 },
+	{ "NaN", NAN, 0 }
 };
 
 static void *defined_vars = NULL;

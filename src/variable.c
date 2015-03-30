@@ -5,13 +5,16 @@
 #include <string.h>	/* strcmp */
 #include "variable.h"
 
+#define PHI 1.61803398874989484820
+
 static int __variable_save(const variable *v);
 
 static int var_compare_by_name(const void *v1, const void *v2);
 
 static const variable default_vars[] = {
 	{ "e", M_E, 0 },
-	{ "pi", M_PI, 0 }
+	{ "pi", M_PI, 0 },
+	{ "phi", PHI, 0 }
 };
 
 static void *defined_vars = NULL;

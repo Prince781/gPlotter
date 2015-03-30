@@ -36,7 +36,7 @@
 
 #define associativity(c) \
 	(c=='+'||c=='-'||c=='*'||c=='-'||c=='%' ? ASSOC_LTR : \
-	(c=='!' ? ASSOC_RTL : UNKNOWN))
+	(c=='!'||c=='^' ? ASSOC_RTL : UNKNOWN))
 
 #define precedence(c) \
 	(c=='^' ? 5 : \
@@ -253,7 +253,8 @@ double function_eval(function *f, double *vals) {
 			// pop all operators until we meet a '(' or an operator
 			// of lower precedence
 			debug("%s: found op %c\n", __func__, *p);
-			while (!stack_empty(operators)
+			while (associativity(*p) != ASSOC_RTL
+				&& !stack_empty(operators)
 				&& (op = stack_peek(operators)) != '(' 
 				&& precedence(*p) <= precedence(op)) {
 				op = stack_pop(operators);
@@ -280,6 +281,7 @@ double function_eval(function *f, double *vals) {
 			stack_push(operators, *p);
 			++p;
 		} else if (*p == ')') {
+			debug("%s: found ')'; condensing values\n", __func__);
 			while (!stack_empty(operators)
 				&& stack_peek(operators) != '(') {
 				op = stack_pop(operators);

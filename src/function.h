@@ -13,12 +13,15 @@ struct function {
 	size_t len;
 	enum function_type type;
 	void *native_fptr;	/* optional function pointer */
+	int destroy;	/* whether or not to free() this structure */
 };
 
 typedef struct function function;
 
 function *function_new(const char *name, const char *vars,
 		       const char *descr);
+
+function *function_native_new(const char *name, size_t nargs, void *fnative);
 
 /*
  * varargs evaluation
@@ -40,5 +43,5 @@ function *function_find(const char *name);
 
 int function_remove(function *f);
 
-int functions_clear(void);
+void functions_clear(void);
 #endif

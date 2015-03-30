@@ -26,7 +26,8 @@
 	(c=='-' ? &sub : \
 	(c=='*' ? &mult : \
 	(c=='/' ? &fdiv : \
-	(c=='^' ? &pow : NULL)))))
+	(c=='^' ? &pow : \
+	(c=='%' ? &fmod : NULL))))))
 
 #define ASSOC_LTR 0
 #define ASSOC_RTL 1
@@ -57,22 +58,28 @@ static int __function_eval(function *f, struct stack_double *operands, double *r
 static void *defined_funcs = NULL;	/* root of binary tree */
 
 #define native_descr "[native]"
-#define native_named_func(f,fname,nargs) { fname, NULL, nargs, native_descr, 9, NATIVE, &f }
-#define native_func(f,nargs) { #f, NULL, nargs, native_descr, 9, NATIVE, &f }
+#define native_named_func(f,fname,nargs) { fname, NULL, nargs, native_descr, 9, NATIVE, &f, 0 }
+#define native_func(f,nargs) { #f, NULL, nargs, native_descr, 9, NATIVE, &f, 0 }
 
 static const function default_funcs[] = {
 	native_func(sin,1),
 	native_func(asin,1),
+	native_func(sinh,1),
 	native_func(cos,1),
 	native_func(acos,1),
+	native_func(cosh,1),
 	native_func(tan,1),
 	native_func(atan,1),
+	native_func(tanh,1),
 	native_func(sqrt,1),
 	native_func(cbrt,1),
 	native_named_func(log10,"log",1),
 	native_named_func(log,"ln",1),
 	native_named_func(fmax,"max",2),
-	native_named_func(fmin,"min",2)
+	native_named_func(fmin,"min",2),
+	native_named_func(fabs,"abs",1),
+	native_func(erf,1),
+	native_func(exp,1)
 };
 
 static int func_compare_by_name(const void *f1, const void *f2);
@@ -94,6 +101,23 @@ function *function_new(const char *name, const char *vars,
 	f->len = strlen(f->descr);
 	f->type = USER;
 	f->native_fptr = NULL;
+	f->destroy = 1;
+
+	return f;
+}
+
+function *function_native_new(const char *name, size_t nargs, void *fnative) {
+	function *f;
+
+	f = malloc(sizeof(*f));
+	f->name = strdup(name);
+	f->vars = NULL;
+	f->nvars = nargs;
+	f->descr = native_descr;
+	f->len = 9;
+	f->type = NATIVE;
+	f->native_fptr = fnative;
+	f->destroy = 1;
 
 	return f;
 }
@@ -126,11 +150,12 @@ static int __function_eval(function *tf, struct stack_double *operands,
 
 	tparams = malloc(sizeof(*tparams) * tf->nvars);
 	debug("%s: evaluating %s(", __func__, tf->name);
-	for (i=tf->nvars-1; i>=0; --i) {
+	for (i=tf->nvars-1; i>=0; --i)
 		tparams[i] = stack_pop(operands);
-		debug("%lf,",tparams[i]);
-	}
-	debug("\b%c\n",')');
+	if (debugging)
+		for (i=0; i<tf->nvars; ++i)
+			debug("%lf, ", tparams[i]);
+	debug("\b\b%c\n", ')');
 	switch(tf->type) {
 	case USER:
 		*res = function_eval(tf, tparams);
@@ -359,9 +384,14 @@ static const char *parse_func(const char *s, function **fptr) {
 }
 
 void function_destroy(function *f) {
-	free(f->descr);
+	if (!f->destroy) {
+		debug("%s: not destroying %s()\n", __func__, f->name);
+		return;
+	}
 	if (f->vars)
 		free(f->vars);
+	if (f->descr)
+		free(f->descr);
 	free(f->name);
 	free(f);
 }
@@ -402,7 +432,6 @@ int function_remove(function *f) {
 	return tdelete(f, &defined_funcs, func_compare_by_name) != NULL;
 }
 
-int functions_clear(void) {
-	/* TODO: clear the tree */
-	return 1;
+void functions_clear(void) {
+	/* TODO */
 }

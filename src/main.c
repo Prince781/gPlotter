@@ -3,12 +3,14 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "function.h"
+#include "variable.h"
 
 int main(int argc, char *argv[]) {
 	char *str;
 	double val;
 	function *f;
 
+	variables_init();
 	functions_init();
 	f = function_new("f0", "xy", "x*3 - y/3");
 	printf("evaluating test function: %s -> %s\n", f->name, f->descr);
@@ -23,6 +25,7 @@ int main(int argc, char *argv[]) {
 		free(str);
 		function_destroy(f);
 	}
-	functions_clear();
+	functions_uninit();
+	variables_uninit();
 	return 0;
 }	

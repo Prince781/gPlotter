@@ -6,6 +6,7 @@
 #include <search.h>
 #include <dyncall.h>	/* dynamic native function calling */
 #include "function.h"
+#include "variable.h"
 #include "ds/stack.h"
 #include "util/u_string.h"
 
@@ -45,6 +46,7 @@
 
 #define var(c,f) (strchr((f)->vars,c) - (f)->vars)
 
+static const char *parse_var(const char *s, double *valptr);
 static const char *parse_func(const char *s, function **fptr);
 static double mult(double, double);
 static double fdiv(double, double);
@@ -224,6 +226,9 @@ double function_eval(function *f, double *vals) {
 		} else if (vals != NULL && is_var(*p,f->vars)) {
 			stack_push(operands, vals[var(*p,f)]);
 			++p;
+		} else if ((p2 = parse_var(p, &res)) > p) {
+			stack_push(operands, res);
+			p = p2;
 		} else if (*p == ',') {	// if function argument separator
 			// pop all operators until we encounter left-parens
 			while (!stack_empty(operators)
@@ -374,6 +379,19 @@ static const char *parse_num(const char *s, double *val) {
 	return s;
 }
 
+static const char *parse_var(const char *s, double *valptr) {
+	char *var_name;
+	size_t vname_len;
+
+	var_name = get_word(s, &vname_len);
+	if (variable_value(var_name, valptr)) {
+		free(var_name);
+		return s + vname_len;
+	}
+	free(var_name);
+	return s;
+}
+
 static const char *parse_func(const char *s, function **fptr) {
 	char *func_name;
 	size_t func_name_len;
@@ -425,7 +443,7 @@ static int func_compare_by_name(const void *f1, const void *f2) {
 function *function_find(const char *name) {
 	char *name2 = strdup(name);
 	void *found;
-	function func = { name2, NULL, 0, NULL, 0, ANY, NULL };
+	function func = { name2, NULL, 0, NULL, 0, ANY, NULL, 0 };
 	found = tfind(&func, &defined_funcs, func_compare_by_name);
 	free(name2);
 	return (found != NULL ? *(function **) found : NULL);
@@ -437,6 +455,6 @@ int function_remove(function *f) {
 	return tdelete(f, &defined_funcs, func_compare_by_name) != NULL;
 }
 
-void functions_clear(void) {
+void functions_uninit(void) {
 	/* TODO */
 }

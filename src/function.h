@@ -1,32 +1,44 @@
 #ifndef _FUNCTION_H
 #define _FUNCTION_H
-#include <stddef.h>
+#include <stddef.h>	/* size_t */
+#include <stdarg.h>	/* varargs */
+
+enum function_type { USER, NATIVE, ANY /*used for searching*/ };
 
 struct function {
-	char *descr;
-	size_t len;
+	char *name;	/* name of function */
 	char *vars;
-	size_t nvars;
+	size_t nvars;	/* number of parameters */
+	char *descr;	/* body of function */
+	size_t len;
+	enum function_type type;
+	void *native_fptr;	/* optional function pointer */
 };
 
 typedef struct function function;
 
-typedef double (*op_1)(double);
-typedef double (*op_2)(double, double);
+function *function_new(const char *name, const char *vars,
+		       const char *descr);
 
-function *function_new(const char *descr, const char *vars);
+/*
+ * varargs evaluation
+ */
+double function_veval(function *f, ...);
 
-/**
-* @brief evaluates a function
-*
-* @param f a function
-* @param vals a set of values, or NULL. Length of vals must be equal
-* to f->nvars.
-*
-* @return 
-*/
 double function_eval(function *f, double *vals);
 
 void function_destroy(function *f);
 
+/*
+ * initialize library functions
+ */
+void functions_init(void);
+
+void function_save(const function *f);
+
+function *function_find(const char *name);
+
+int function_remove(function *f);
+
+int functions_clear(void);
 #endif

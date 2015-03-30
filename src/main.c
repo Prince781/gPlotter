@@ -9,18 +9,20 @@ int main(int argc, char *argv[]) {
 	double val;
 	function *f;
 
-	double vs[] = {10, 11, 12};
-	f = function_new("x^2 + y^2 + z^2", "xyz");
-	printf("evaluating test function: %s\n", (char *)f);
-	val = function_eval(f, vs);
+	functions_init();
+	f = function_new("f0", "xy", "x*3 - y/3");
+	printf("evaluating test function: %s -> %s\n", f->name, f->descr);
+	val = function_veval(f, 10., 6.);	// = 30 - 2 = 28
+	printf("val = %lf\n", val);
+	function_save(f);
 	while ((str = readline("eval: ")) != NULL) {
-		f = function_new(str, NULL);
+		f = function_new("f1", NULL, str);
 		val = function_eval(f, NULL);
 		printf("val = %lf\n", val);
 		add_history(str);
 		free(str);
 		function_destroy(f);
 	}
-
+	functions_clear();
 	return 0;
 }	

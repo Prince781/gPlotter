@@ -190,6 +190,11 @@ double function_veval(function *f, ...) {
 	return ret;
 }
 
+/**
+ * uses Shunting-yard algorithm to convert infix to postfix
+ * evaluation is done "in-progress" (operand stack is collapsed while fetching
+ * operators)
+ */
 double function_eval(function *f, double *vals) {
 	struct stack_void_ptr *functions;
 	struct stack_int *operators;

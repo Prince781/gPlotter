@@ -9,6 +9,9 @@ gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cair
 
 ##Feature List
 * REPL ( **in progress** )
+  - dynamic calling of native functions (`sin`,`erf`,`exp`,etc) ( **done** )
+  - function evaluation ( **mostly** )
+  - defining functions via REPL 
 * GUI ( **todo** )
 * Core ( **in progress** )
   - Evaluating infix statements ( **done** )

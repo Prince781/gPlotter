@@ -12,9 +12,7 @@
 
 #define FUNCTION_TOKEN 4000
 
-#define debugging 1
-
-#define debug(fmt,...) debugging ? printf(fmt, __VA_ARGS__) : -1
+#define debug(fmt,...) function_dbg ? printf(fmt, __VA_ARGS__) : -1
 
 #define is_operand(c) (isalnum(c) || c=='.')
 
@@ -45,6 +43,8 @@
 	(c==FUNCTION_TOKEN ? 6 : 0))))
 
 #define var(c,f) (strchr((f)->vars,c) - (f)->vars)
+
+unsigned function_dbg = 0;
 
 static const char *parse_var(const char *s, double *valptr);
 static const char *parse_func(const char *s, function **fptr);
@@ -155,7 +155,7 @@ static int __function_eval(function *tf, struct stack_double *operands,
 	debug("%s: evaluating %s(", __func__, tf->name);
 	for (i=tf->nvars-1; i>=0; --i)
 		tparams[i] = stack_pop(operands);
-	if (debugging)
+	if (function_dbg)
 		for (i=0; i<tf->nvars; ++i)
 			debug("%lf, ", tparams[i]);
 	debug("\b\b%c\n", ')');

@@ -18,6 +18,8 @@ struct function {
 
 typedef struct function function;
 
+extern unsigned function_dbg;
+
 function *function_new(const char *name, const char *vars,
 		       const char *descr);
 

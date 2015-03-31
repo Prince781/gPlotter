@@ -19,7 +19,7 @@ static const variable default_vars[] = {
 	{ "NaN", NAN, 0 }
 };
 
-static void *defined_vars = NULL;
+void *defined_vars = NULL;
 
 void variables_init(void) {
 	const variable *v = &default_vars[0];

@@ -54,10 +54,13 @@ static void _cmd_set(command *, void **args);
 static void _cmd_defs_fvisit(const void *nodep,
 			     const VISIT which,
 			     const int depth);
+static void _cmd_defs_vvisit(const void *nodep,
+			     const VISIT which,
+			     const int depth);
 
 static const command default_cmds[] = {
 	{ "debug", 1, &_cmd_dbg, "[on|off]", "turn debugging on or off" },
-	{ "defined", 0, &_cmd_defs, "", "list all defined functions" },
+	{ "defined", 0, &_cmd_defs, "", "list all defined functions and variables" },
 	{ "eval", 0, &_cmd_eval, "", "begins eval-mode" },
 	{ "exit", 0, &_cmd_exit, "", "exits this program" },
 	{ "help", 1, &_cmd_help, "[cmd]", "show help" },
@@ -130,9 +133,12 @@ static void _cmd_exit(command *cmd, void **argv) {
 }
 
 static void _cmd_defs(command *c, void **args) {
-	extern void *defined_funcs;
-	
+	extern void *defined_funcs, *defined_vars;
+
+	printf(" defined functions:\n");
 	twalk(defined_funcs, _cmd_defs_fvisit);
+	printf(" defined variables:\n");
+	twalk(defined_vars, _cmd_defs_vvisit);
 }
 
 static void _cmd_defs_fvisit(const void *nodep,
@@ -140,8 +146,8 @@ static void _cmd_defs_fvisit(const void *nodep,
 			     const int depth) {
 	function *func = *(function **) nodep;
 
-	if (which == preorder) {
-		printf(" %s(", func->name);
+	if (which == preorder || which == leaf) {
+		printf("\t%s(", func->name);
 		for (int i=0; i<func->nvars; ++i)
 			if (func->vars == NULL)
 				printf("x%d,", i);
@@ -149,6 +155,15 @@ static void _cmd_defs_fvisit(const void *nodep,
 				printf("%c,", func->vars[i]);
 		printf("\b) -> %s\n", func->descr);
 	}
+}
+
+static void _cmd_defs_vvisit(const void *nodep,
+			     const VISIT which,
+			     const int depth) {
+	variable *var = *(variable **) nodep;
+
+	if (which == preorder || which == leaf)
+		printf("\t%s = %lf\n", var->name, var->val);
 }
 
 static void _cmd_help(command *cmd, void **argv) {

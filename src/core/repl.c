@@ -13,7 +13,8 @@ static int repl_initialized = 0;
 
 enum repl_state {
 	INIT,
-	EVAL
+	EVAL,
+	EXIT
 };
 
 static struct {
@@ -43,13 +44,22 @@ struct command {
 static void command_display(const command *c);
 
 static void _cmd_eval(command *, void **args);
+static void _cmd_exit(command *, void **args);
 static void _cmd_dbg(command *, void **args);
+static void _cmd_defs(command *, void **args);
 static void _cmd_help(command *, void **args);
 static void _cmd_set(command *, void **args);
 
+// for _cmd_defs
+static void _cmd_defs_fvisit(const void *nodep,
+			     const VISIT which,
+			     const int depth);
+
 static const command default_cmds[] = {
 	{ "debug", 1, &_cmd_dbg, "[on|off]", "turn debugging on or off" },
+	{ "defined", 0, &_cmd_defs, "", "list all defined functions" },
 	{ "eval", 0, &_cmd_eval, "", "begins eval-mode" },
+	{ "exit", 0, &_cmd_exit, "", "exits this program" },
 	{ "help", 1, &_cmd_help, "[cmd]", "show help" },
 	{ "set", 1, &_cmd_set, "[expr]", "assigns a variable or function" }
 };
@@ -115,6 +125,32 @@ static void _cmd_eval(command *cmd, void **argv) {
 	printf("\n");
 }
 
+static void _cmd_exit(command *cmd, void **argv) {
+	repl.state = EXIT;
+}
+
+static void _cmd_defs(command *c, void **args) {
+	extern void *defined_funcs;
+	
+	twalk(defined_funcs, _cmd_defs_fvisit);
+}
+
+static void _cmd_defs_fvisit(const void *nodep,
+			     const VISIT which,
+			     const int depth) {
+	function *func = *(function **) nodep;
+
+	if (which == preorder) {
+		printf(" %s(", func->name);
+		for (int i=0; i<func->nvars; ++i)
+			if (func->vars == NULL)
+				printf("x%d,", i);
+			else
+				printf("%c,", func->vars[i]);
+		printf("\b) -> %s\n", func->descr);
+	}
+}
+
 static void _cmd_help(command *cmd, void **argv) {
 	int i;
 	command *found;
@@ -166,7 +202,8 @@ void repl_prompt(const char *pre) {
 	if (asprintf(&prefix, "%s %% ", pre) == -1)
 		fprintf(stderr, "%s: could not allocate prefix\n", __func__);
 	else
-		while ((input = readline(prefix)) != NULL) {
+		while (repl.state != EXIT 
+			&& (input = readline(prefix)) != NULL) {
 			if ((cmd_word = get_word(input, &wordlen)) != NULL) {
 				if ((c = commands_find(cmd_word)) != NULL) {
 					argv[1] = NULL;

@@ -57,7 +57,7 @@ static const char *parse_num(const char *s, double *val);
 static int function_native_eval(function *tf, double *vals, double *res);
 static int __function_eval(function *f, struct stack_double *operands, double *res);
 
-static void *defined_funcs = NULL;	/* root of binary tree */
+void *defined_funcs = NULL;	/* root of binary tree */
 
 #define native_descr "[native]"
 #define native_named_func(f,fname,nargs) { fname, NULL, nargs, native_descr, 9, NATIVE, &f, 0 }

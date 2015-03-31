@@ -18,7 +18,7 @@
 
 #define is_operand(c) (isalnum(c) || c=='.')
 
-#define is_operator(c) (c=='+' || c=='-' || c=='*' || c=='/' || c=='^')
+#define is_operator(c) (c=='+'||c=='-'||c=='*'||c=='/'||c=='^'||c=='%')
 
 #define is_var(c,vars) (vars != NULL && strchr(vars,c) != NULL)
 
@@ -81,7 +81,8 @@ static const function default_funcs[] = {
 	native_named_func(fmin,"min",2),
 	native_named_func(fabs,"abs",1),
 	native_func(erf,1),
-	native_func(exp,1)
+	native_func(exp,1),
+	native_func(hypot,2)
 };
 
 static int func_compare_by_name(const void *f1, const void *f2);
@@ -253,10 +254,10 @@ double function_eval(function *f, double *vals) {
 			// pop all operators until we meet a '(' or an operator
 			// of lower precedence
 			debug("%s: found op %c\n", __func__, *p);
-			while (associativity(*p) != ASSOC_RTL
-				&& !stack_empty(operators)
+			while (!stack_empty(operators)
 				&& (op = stack_peek(operators)) != '(' 
-				&& precedence(*p) <= precedence(op)) {
+				&& (precedence(*p) <= precedence(op) 
+					|| associativity(*p) != ASSOC_RTL)) {
 				op = stack_pop(operators);
 				if (op == FUNCTION_TOKEN) {	
 					tf = stack_pop(functions);
@@ -339,7 +340,7 @@ double function_eval(function *f, double *vals) {
 		stack_push(operands, res);
 	}
 
-	res = stack_pop(operands);
+	res = stack_empty(operands) ? 0 : stack_pop(operands);
 end:
 	stack_destroy(functions);
 	stack_destroy(operands);

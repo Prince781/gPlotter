@@ -11,11 +11,6 @@
 */
 char *strrev(char *str);
 
-#define _u_concat2(a,b) a ## b
-#define u_concat2(a,b) _u_concat2(a,b)
-#define _u_concat3(a,b,c) a ## b ## c
-#define u_concat3(a,b,c) _u_concat3(a,b,c)
-
 /**
  * returns the next word from str on
  * modifies *len

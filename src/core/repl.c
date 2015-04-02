@@ -8,6 +8,8 @@
 #include "function.h"
 #include "variable.h"
 #include "util/u_string.h"	/* get_word */
+#include "util/console.h"	/* console colors */
+#include "program.h"
 
 static int repl_initialized = 0;
 
@@ -43,6 +45,7 @@ struct command {
 
 static void command_display(const command *c);
 
+static void _cmd_about(command *, void **args);
 static void _cmd_eval(command *, void **args);
 static void _cmd_exit(command *, void **args);
 static void _cmd_dbg(command *, void **args);
@@ -59,6 +62,7 @@ static void _cmd_defs_vvisit(const void *nodep,
 			     const int depth);
 
 static const command default_cmds[] = {
+	{ "about", 0, &_cmd_about, "", "display information about "PROGRAM_NAME },
 	{ "debug", 1, &_cmd_dbg, "[on|off]", "turn debugging on or off" },
 	{ "defined", 0, &_cmd_defs, "", "list all defined functions and variables" },
 	{ "eval", 0, &_cmd_eval, "", "begins eval-mode" },
@@ -101,6 +105,13 @@ static void commands_uninit(void) {
 
 static void command_display(const command *c) {
 	printf(" usage: %s %s - %s\n", c->name, c->syntax, c->info);
+}
+
+static void _cmd_about(command *cmd, void **args) {
+	printf(" About this program:\n"
+		"\t%s, version %s\n"
+		"\tbuilt on %s at %s\n",
+		PROGRAM_NAME, GPLOTTER_VERSION, __DATE__, __TIME__);
 }
 
 static void _cmd_dbg(command *cmd, void **argv) {
@@ -214,7 +225,9 @@ void repl_prompt(const char *pre) {
 	size_t wordlen;
 	void *argv[16];
 
-	if (asprintf(&prefix, "%s %% ", pre) == -1)
+	printf("Starting %s v"KRED"%s"KNRM"...\n", 
+		PROGRAM_NAME, GPLOTTER_VERSION);
+	if (asprintf(&prefix, "%s%s%s %%%s ", KBLU, pre, KGRN, KNRM) == -1)
 		fprintf(stderr, "%s: could not allocate prefix\n", __func__);
 	else
 		while (repl.state != EXIT 
@@ -230,7 +243,8 @@ void repl_prompt(const char *pre) {
 						"'%s' - not a command\n",
 						cmd_word);
 				free(cmd_word);
-			}
+			} else
+				fprintf(stderr, "unknown command\n");
 			free(input);
 		}
 

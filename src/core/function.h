@@ -1,7 +1,6 @@
 #ifndef _FUNCTION_H
 #define _FUNCTION_H
 #include <stddef.h>	/* size_t */
-#include <stdarg.h>	/* varargs */
 
 enum function_type { USER, NATIVE, ANY /*used for searching*/ };
 

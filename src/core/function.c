@@ -5,6 +5,7 @@
 #include <string.h>
 #include <search.h>
 #include <dyncall.h>	/* dynamic native function calling */
+#include <stdarg.h>	/* varargs */
 #include "function.h"
 #include "variable.h"
 #include "ds/stack.h"
@@ -270,8 +271,8 @@ double function_eval(function *f, double *vals) {
 					val2 = stack_pop(operands);
 					val1 = stack_pop(operands);
 					res = opfunc(op)(val1, val2);
-					debug("%s: pushing %lf %c %lf\n", __func__,
-						val1, op, val2);
+					debug("%s: pushing %lf %c %lf\n", 
+						__func__, val1, op, val2);
 				}
 				stack_push(operands, res);
 			}

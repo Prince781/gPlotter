@@ -10,6 +10,7 @@
 #include "variable.h"
 #include "ds/stack.h"
 #include "util/u_string.h"
+#include "util/util.h"
 
 #define FUNCTION_TOKEN 4000
 
@@ -470,5 +471,12 @@ int function_remove(function *f) {
 }
 
 void functions_uninit(void) {
-	/* TODO */
+	function *f;
+
+	while (defined_funcs != NULL) {
+		f = *(function **) defined_funcs;
+		tdelete(f, &defined_funcs, compare_ptr);
+		if (f->destroy)
+			function_destroy(f);
+	}
 }

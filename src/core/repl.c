@@ -9,6 +9,7 @@
 #include "variable.h"
 #include "util/u_string.h"	/* get_word */
 #include "util/console.h"	/* console colors */
+#include "util/util.h"		/* compare_ptr */
 #include "program.h"
 
 static int repl_initialized = 0;
@@ -100,7 +101,12 @@ static command *commands_find(const char *name) {
 }
 
 static void commands_uninit(void) {
-	/* TODO */
+	command *c;
+
+	while (command_list != NULL) {
+		c = *(command **) command_list;
+		tdelete(c, &command_list, compare_ptr);
+	}
 }
 
 static void command_display(const command *c) {
@@ -200,7 +206,7 @@ static void _cmd_set(command *cmd, void **argv) {
 		command_display(cmd);
 		return;
 	}
-	/* TODO: evaluate 'set' command */
+	
 }
 
 static int cmd_compare_by_name(const void *c1, const void *c2) {
@@ -236,11 +242,11 @@ void repl_prompt(const char *pre) {
 				if ((c = commands_find(cmd_word)) != NULL) {
 					argv[1] = NULL;
 					argv[0] = input[wordlen] ? 
-							input + wordlen+1 : NULL;
+						  input + wordlen+1 : NULL;
 					c->exec(c, argv);
 				} else if (*cmd_word)
 					fprintf(stderr,
-						"'%s' - not a command\n",
+						" '%s' - not a command\n",
 						cmd_word);
 				free(cmd_word);
 			} else

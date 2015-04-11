@@ -4,6 +4,7 @@
 #include <search.h>
 #include <string.h>	/* strcmp */
 #include "variable.h"
+#include "util/util.h"	/* compare_ptr */
 
 #define PHI 1.61803398874989484820
 
@@ -36,6 +37,7 @@ int variable_save(const char *name, double val) {
 		return 0;
 	v->name = strdup(name);
 	v->val = val;
+	v->destroy = 1;
 	return __variable_save(v);
 }
 
@@ -77,5 +79,14 @@ static int var_compare_by_name(const void *v1, const void *v2) {
 }
 
 void variables_uninit(void) {
-	/* TODO */
+	variable *v;
+
+	while (defined_vars != NULL) {
+		v = *(variable **) defined_vars;
+		tdelete(v, &defined_vars, compare_ptr);
+		if (v->destroy) {
+			free(v->name);
+			free(v);
+		}
+	}
 }

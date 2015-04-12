@@ -1,7 +1,8 @@
-#include "core/repl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include "core/repl.h"
+#include "gui/gplotter_app.h"
 
 static struct option opts[] = {
 	{ "repl", no_argument, 0, 'r' },
@@ -34,8 +35,7 @@ int main(int argc, char *argv[]) {
 			print_help();
 			break;
 		}
-	print_help();
-	return 0;
+	return g_application_run(G_APPLICATION(gplotter_app_new()), argc, argv);
 }
 
 void print_help(void) {

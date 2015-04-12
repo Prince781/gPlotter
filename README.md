@@ -25,3 +25,8 @@ gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cair
     - LaTeX ( **todo** )
     - Pure MathML ( **todo** )
   - Save As (MathML XML document with additional info as .gplt) ( **todo** )
+
+##Dependencies
+- GTK+ 3.16 for UI
+- GNU Readline 6.3 for REPL
+- dyncall (optional), for using library math functions (like `sin` or `erf`) in equations

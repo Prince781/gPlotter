@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/org/gtk/gplotter">
     <file preprocess="xml-stripblanks">headerbar.ui</file>
+    <file preprocess="xml-stripblanks">window.ui</file>
   </gresource>
 </gresources>

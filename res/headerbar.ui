@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.18.1 -->
+<interface>
+  <requires lib="gtk+" version="3.16"/>
+  <object class="GtkImage" id="pref_button_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">emblem-system-symbolic</property>
+  </object>
+  <object class="GtkHeaderBar" id="mw_headerbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="title">gPlotter</property>
+    <property name="show_close_button">True</property>
+    <child>
+      <object class="GtkButtonBox" id="hb_buttonbox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="layout_style">expand</property>
+        <child>
+          <object class="GtkButton" id="save_button">
+            <property name="label" translatable="yes">Save</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="export_button">
+            <property name="label" translatable="yes">Export</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="pref_button">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">True</property>
+        <property name="tooltip_text" translatable="yes">Preferences</property>
+        <property name="image">pref_button_image</property>
+        <property name="always_show_image">True</property>
+      </object>
+      <packing>
+        <property name="pack_type">end</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+  </object>
+</interface>

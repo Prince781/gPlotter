@@ -10,6 +10,8 @@ GPlotterAppWindow *gplotter_app_window_new(GPlotterApp *app) {
 	GPlotterAppWindow *gp_win;
 	GtkWindow *win;
 	GtkWidget *headerbar;
+	GtkBuilder *hb_builder;
+	GObject *hb_obj;
 
 	gp_win = g_object_new(GPLOTTER_APP_WINDOW_TYPE, 
 		"application", app, 
@@ -18,10 +20,10 @@ GPlotterAppWindow *gplotter_app_window_new(GPlotterApp *app) {
 	win = GTK_WINDOW(gp_win);
 
 	// headerbar
-	headerbar = gtk_header_bar_new();
+	hb_builder = gtk_builder_new_from_resource("/org/gtk/gplotter/headerbar.ui");
+	hb_obj = gtk_builder_get_object(hb_builder, "mw_headerbar");
+	headerbar = GTK_WIDGET(hb_obj);
 	gtk_window_set_titlebar(win, headerbar);
-	gtk_header_bar_set_title(GTK_HEADER_BAR(headerbar), "gPlotter");
-	gtk_header_bar_set_show_close_button(GTK_HEADER_BAR(headerbar), TRUE);
 	gtk_widget_show(headerbar);
 	
 	return gp_win;

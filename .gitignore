@@ -2,4 +2,5 @@ bin/
 src/bin/
 *.gch
 *.o
-gplotter
+gPlotter
+*~

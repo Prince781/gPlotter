@@ -7,8 +7,6 @@
     <property name="can_focus">False</property>
     <child>
       <object class="GtkDrawingArea" id="grid_area">
-        <property name="width_request">400</property>
-        <property name="height_request">400</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
       </object>
@@ -89,7 +87,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkColorButton" id="colorbutton1">
+                  <object class="GtkColorButton" id="bg_colorbutton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -110,12 +108,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box6">
+              <object class="GtkBox" id="box1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_right">5</property>
                 <child>
-                  <object class="GtkLabel" id="label3">
+                  <object class="GtkLabel" id="label8">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
@@ -129,14 +127,16 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSwitch" id="switch_axes">
+                  <object class="GtkColorButton" id="axes_colorbutton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="active">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="title" translatable="yes">Grid Background Color</property>
+                    <property name="rgba">rgb(255,255,255)</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
+                    <property name="fill">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -157,7 +157,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">15</property>
-                    <property name="label" translatable="yes">Numbers</property>
+                    <property name="label" translatable="yes">Label Axes</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -167,7 +167,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSwitch" id="switch_numbered_grid">
+                  <object class="GtkSwitch" id="switch_labeled_grid">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="active">True</property>
@@ -183,6 +183,44 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="box6">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_right">5</property>
+                <child>
+                  <object class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xpad">15</property>
+                    <property name="label" translatable="yes">Display Axes</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSwitch" id="switch_display_axes">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="active">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child>
@@ -359,7 +397,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">5</property>
               </packing>
             </child>
           </object>

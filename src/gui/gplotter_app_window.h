@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "gplotter_app.h"
+#include "session.h"
 
 /* type macros */
 #define GPLOTTER_APP_WINDOW_TYPE	(gplotter_app_window_get_type ())
@@ -15,6 +16,9 @@ typedef struct _GPlotterAppWindowClass GPlotterAppWindowClass;
 
 struct _GPlotterAppWindow {
 	GtkApplicationWindow parent;
+
+	/* instance members */
+	struct gp_session *session;
 };
 
 struct _GPlotterAppWindowClass {

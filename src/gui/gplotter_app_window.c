@@ -14,6 +14,10 @@ static void gplotter_app_window_init(GPlotterAppWindow *win) {
 	win->session->ui.label_axes = 1;
 	win->session->ui.xmin = win->session->ui.ymin = -10.0;
 	win->session->ui.xmax = win->session->ui.ymax = 10.0;
+
+	win->session->nfuncs = 10;
+	win->session->factive = -1;
+	win->session->ui_f = calloc(win->session->nfuncs, sizeof(ui_function *));
 }
 
 static void gplotter_app_window_finalize(GObject *win) {

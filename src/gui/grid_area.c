@@ -115,6 +115,31 @@ gboolean grid_draw2d(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		}
 	}
 
+	// draw functions
+	if (session->factive >= 0 && session->factive < session->nfuncs
+	&& session->ui_f[session->factive] != NULL) {
+		ui_function *uif = session->ui_f[session->factive];
+		double x, y, z;
+		int xp, yp;
+		int path_started = 0;
+
+		gdk_cairo_set_source_rgba(cr, uif->color);
+		if (uif->func->nvars == 1) {		// 2D
+			for (xp=0; xp<=width; ++xp) {
+				x = session->ui.xmin + diff_x*(double)xp/width;
+				y = function_veval(uif->func, x);
+				yp = (int)(height * 
+					(y-session->ui.ymin)/diff_y + 0.5);
+				if (!path_started) {
+					cairo_move_to(cr, xp, yp);
+					path_started = 1;
+				} else
+					cairo_line_to(cr, xp, yp);
+			}
+			cairo_stroke(cr);
+		}
+	}
+
 	cairo_restore(cr);
 
 	return FALSE;

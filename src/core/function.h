@@ -45,4 +45,5 @@ function *function_find(const char *name);
 int function_remove(function *f);
 
 void functions_uninit(void);
+
 #endif

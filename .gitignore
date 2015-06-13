@@ -4,3 +4,6 @@ src/bin/
 *.o
 gPlotter
 *~
+.gdb_history
+peda-session-*
+resources.c

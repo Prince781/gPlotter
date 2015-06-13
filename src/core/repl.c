@@ -137,11 +137,10 @@ static void _cmd_dbg(const command *cmd, void **argv) {
 }
 
 static void _cmd_eval(const command *cmd, void **argv) {
-	long nl;
 	enum repl_state saved = repl.state;
 
 	repl.state = EVAL;
-	for (nl=0; repl_prompt_eval(nl) != -1; ++nl)
+	for (long nl = 0; repl_prompt_eval(nl) != -1; ++nl)
 		;
 	repl.state = saved;
 	printf("\n");
@@ -186,15 +185,13 @@ static void _cmd_defs_vvisit(const void *nodep,
 }
 
 static void _cmd_help(const command *cmd, void **argv) {
-	int i;
-	const command *found;
 
 	if (argv[0] ==  NULL)
-		for (i=0; i<num_cmds; ++i)
+		for (int i=0; i<num_cmds; ++i)
 			command_display(&default_cmds[i]);
 	else
 		for (; *argv; ++argv) {
-			found = commands_find((char *) *argv);
+			const command *found = commands_find((char *) *argv);
 			if (found != NULL)
 				command_display(found);
 			else
@@ -242,26 +239,26 @@ void repl_prompt(const char *pre) {
 	size_t wordlen;
 	void *argv[16];
 
-	printf("Starting %s v"KRED"%s"KNRM"...\n", 
-		PROGRAM_NAME, GPLOTTER_VERSION);
+	printf("Starting %s v"KRED"%s"KNRM"...\n", PROGRAM_NAME, GPLOTTER_VERSION);
 	if (asprintf(&prefix, "%s%s%s %%%s ", KBLU, pre, KGRN, KNRM) == -1)
 		fprintf(stderr, "%s: could not allocate prefix\n", __func__);
 	else
-		while (repl.state != EXIT 
-			&& (input = readline(prefix)) != NULL) {
+		while (repl.state != EXIT && (input = readline(prefix)) != NULL) {
 			if ((cmd_word = get_word(input, &wordlen)) != NULL) {
 				if ((c = commands_find(cmd_word)) != NULL) {
 					argv[1] = NULL;
 					argv[0] = input[wordlen] ? 
 						  input + wordlen+1 : NULL;
 					c->exec(c, argv);
-				} else if (*cmd_word)
+				} else if (*cmd_word) {
 					fprintf(stderr,
 						" '%s' - not a command\n",
 						cmd_word);
+				}
 				free(cmd_word);
-			} else
+			} else {
 				fprintf(stderr, "unknown command\n");
+			}
 			free(input);
 		}
 

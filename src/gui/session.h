@@ -15,9 +15,10 @@ struct gp_session {
 		double		xmin, xmax;
 		double		ymin, ymax;
 	} ui;
-	ui_function	**ui_f, **f_empty;
-	size_t 		nfuncs;
-	ssize_t		factive;
+	ui_function		**ui_f,		// array of defined functions
+  				**f_empty;	// pointer to end of array
+	size_t 		nfuncs;		// number of defined functions
+	ssize_t		factive;	// the currently-active function
 };
 
 ssize_t gp_session_add_func(struct gp_session *s, ui_function *f);

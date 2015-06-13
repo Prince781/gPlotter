@@ -12,7 +12,7 @@ ssize_t gp_session_add_func(struct gp_session *s, ui_function *f) {
 		memset(s->f_empty, 0, length * sizeof(*s->ui_f)); 
 	}
 	*s->f_empty = f;
-	for (; (s->f_empty - s->ui_f) >= s->nfuncs || *s->f_empty != NULL;
+	for (; s->f_empty - s->ui_f >= s->nfuncs || *s->f_empty != NULL;
 		++s->f_empty);
 	
 	return s->f_empty - s->ui_f;

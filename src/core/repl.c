@@ -35,24 +35,25 @@ static void commands_uninit(void);
 	(cmd->nargs == 2 ? (f_2)cmd->exec : cmd->exec)))
 
 typedef struct command command;
+typedef void (*cmd_exec)(const command *, void *[]);
 
 struct command {
 	char *name;
 	size_t nargs;
-	void (*exec)(command *, void **);
+	const cmd_exec exec;
 	char *syntax;	/* syntax info */
 	char *info;	/* a description (for help command) */
 };
 
 static void command_display(const command *c);
 
-static void _cmd_about(command *, void **args);
-static void _cmd_eval(command *, void **args);
-static void _cmd_exit(command *, void **args);
-static void _cmd_dbg(command *, void **args);
-static void _cmd_defs(command *, void **args);
-static void _cmd_help(command *, void **args);
-static void _cmd_set(command *, void **args);
+static void _cmd_about(const command *, void **args);
+static void _cmd_eval(const command *, void **args);
+static void _cmd_exit(const command *, void **args);
+static void _cmd_dbg(const command *, void **args);
+static void _cmd_defs(const command *, void **args);
+static void _cmd_help(const command *, void **args);
+static void _cmd_set(const command *, void **args);
 
 // for _cmd_defs
 static void _cmd_defs_fvisit(const void *nodep,
@@ -69,7 +70,8 @@ static const command default_cmds[] = {
 	{ "eval", 0, &_cmd_eval, "", "begins eval-mode" },
 	{ "exit", 0, &_cmd_exit, "", "exits this program" },
 	{ "help", 1, &_cmd_help, "[cmd]", "show help" },
-	{ "set", 1, &_cmd_set, "[expr]", "assigns a variable or function" }
+	{ "set", 1, &_cmd_set, "[expr] (var = ...) or f(...) = ...",
+		"assigns a variable or function" }
 };
 
 static const size_t num_cmds = sizeof(default_cmds) / sizeof(default_cmds[0]);
@@ -91,20 +93,20 @@ static void commands_init(void) {
 	}
 }
 
-static command *commands_find(const char *name) {
-	void *found;
+static const command *commands_find(const char *name) {
+	const void *found;
 	char *name2 = strdup(name);
 	command cmd = { name2, 0, NULL, NULL };
 	found = tfind(&cmd, &command_list, cmd_compare_by_name);
 	free(name2);
-	return (found != NULL ? *(command **) found : NULL); 
+	return (found != NULL ? *(const command **) found : NULL); 
 }
 
 static void commands_uninit(void) {
-	command *c;
+	const command *c;
 
 	while (command_list != NULL) {
-		c = *(command **) command_list;
+		c = *(const command **) command_list;
 		tdelete(c, &command_list, compare_ptr);
 	}
 }
@@ -113,14 +115,14 @@ static void command_display(const command *c) {
 	printf(" usage: %s %s - %s\n", c->name, c->syntax, c->info);
 }
 
-static void _cmd_about(command *cmd, void **args) {
+static void _cmd_about(const command *cmd, void **argv) {
 	printf(" About this program:\n"
 		"\t%s, version %s\n"
 		"\tbuilt on %s at %s\n",
 		PROGRAM_NAME, GPLOTTER_VERSION, __DATE__, __TIME__);
 }
 
-static void _cmd_dbg(command *cmd, void **argv) {
+static void _cmd_dbg(const command *cmd, void **argv) {
 	if (argv[0] == NULL)
 		command_display(cmd);
 	else if (strcmp("on", argv[0]) == 0) {
@@ -134,7 +136,7 @@ static void _cmd_dbg(command *cmd, void **argv) {
 			cmd->name, argv[0]);
 }
 
-static void _cmd_eval(command *cmd, void **argv) {
+static void _cmd_eval(const command *cmd, void **argv) {
 	long nl;
 	enum repl_state saved = repl.state;
 
@@ -145,11 +147,11 @@ static void _cmd_eval(command *cmd, void **argv) {
 	printf("\n");
 }
 
-static void _cmd_exit(command *cmd, void **argv) {
+static void _cmd_exit(const command *cmd, void **argv) {
 	repl.state = EXIT;
 }
 
-static void _cmd_defs(command *c, void **args) {
+static void _cmd_defs(const command *c, void **args) {
 	extern void *defined_funcs, *defined_vars;
 
 	printf(" defined functions:\n");
@@ -183,9 +185,9 @@ static void _cmd_defs_vvisit(const void *nodep,
 		printf("\t%s = %lf\n", var->name, var->val);
 }
 
-static void _cmd_help(command *cmd, void **argv) {
+static void _cmd_help(const command *cmd, void **argv) {
 	int i;
-	command *found;
+	const command *found;
 
 	if (argv[0] ==  NULL)
 		for (i=0; i<num_cmds; ++i)
@@ -201,12 +203,21 @@ static void _cmd_help(command *cmd, void **argv) {
 		}
 }
 
-static void _cmd_set(command *cmd, void **argv) {
+static void _cmd_set(const command *cmd, void **argv) {
 	if (argv[0] == NULL) {
 		command_display(cmd);
 		return;
 	}
-	
+	function *var_eval;
+	const char *str = argv[0];
+	const char *ptr = strchr(str, '=');
+	if (ptr == NULL) {
+		fprintf(stderr, " %s: no assignment given\n", *(char **) cmd);
+		return;
+	}
+	const size_t len1 = ptr - str;
+	const size_t len2 = strlen(ptr);
+	// TODO
 }
 
 static int cmd_compare_by_name(const void *c1, const void *c2) {
@@ -227,7 +238,7 @@ void repl_prompt(const char *pre) {
 	char *input;
 	char *prefix = NULL;
 	char *cmd_word;
-	command *c;
+	const command *c;
 	size_t wordlen;
 	void *argv[16];
 

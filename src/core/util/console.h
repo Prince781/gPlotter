@@ -9,7 +9,5 @@
 #define KMAG	"\x1B[35m"
 #define KCYN	"\x1B[36m"
 #define KWHT	"\x1B[37m"
-#define KRST	"\033[0m"	// resets to previous console color
-
 
 #endif	/* _CONSOLE_H */

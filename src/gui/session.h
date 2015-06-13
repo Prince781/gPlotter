@@ -10,14 +10,14 @@ struct gp_session {
 		struct {
 			GdkRGBA	axes, bg;
 		} colors;
-		int		show_axes;
-		int		label_axes;
-		double		xmin, xmax;
-		double		ymin, ymax;
+		int	show_axes;
+		int	label_axes;
+		double	xmin, xmax;
+		double	ymin, ymax;
 	} ui;
-	ui_function		**ui_f,		// array of defined functions
-  				**f_empty;	// pointer to end of array
-	size_t 		nfuncs;		// number of defined functions
+	ui_function	**ui_f;		// array of defined functions
+	ui_function	**f_empty;	// pointer to end of array
+	size_t		nfuncs;		// number of defined functions
 	ssize_t		factive;	// the currently-active function
 };
 

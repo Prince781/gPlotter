@@ -20,22 +20,19 @@ void print_help(void);
 int main(int argc, char *argv[]) {
 	int c, i;
 
-	while ((c = getopt_long(argc, argv, "rh", opts, &i)) != -1)
-		switch(c) {
-		case 'r':
+	while ((c = getopt_long(argc, argv, "rh", opts, &i)) != -1) {
+		if (c == 'r') {
 			repl_init();
 			repl_prompt("gPlotter");
 			repl_uninit();
 			return 0;
-			break;
-		case 'h':
+		} else {
 			print_help();
-			break;
-		default:
-			print_help();
-			break;
 		}
-	return g_application_run(G_APPLICATION(gplotter_app_new()), argc, argv);
+	}
+
+	g_autoptr(GPlotterApp) app = gplotter_app_new();
+	return g_application_run(G_APPLICATION(app), argc, argv);
 }
 
 void print_help(void) {

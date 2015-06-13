@@ -5,7 +5,7 @@
 G_DEFINE_TYPE(GPlotterAppWindow, gplotter_app_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static void gplotter_app_window_init(GPlotterAppWindow *win) {
-	win->session = calloc(1, sizeof(struct gp_session));
+	win->session = g_new0(struct gp_session, 1);
 
 	win->session->ui.colors.bg = (GdkRGBA){ 1, 1, 1, 1 };
 	win->session->ui.colors.axes = (GdkRGBA){ 0.2, 0.2, 0.2, 1 };
@@ -23,7 +23,7 @@ static void gplotter_app_window_init(GPlotterAppWindow *win) {
 static void gplotter_app_window_finalize(GObject *win) {
 	GPlotterAppWindow *self = GPLOTTER_APP_WINDOW(win);
 
-	free(self->session);
+	g_free(self->session);
 	self->session = NULL;
 	G_OBJECT_CLASS(gplotter_app_window_parent_class)->finalize(win);
 }
@@ -33,50 +33,33 @@ static void gplotter_app_window_class_init(GPlotterAppWindowClass *class) {
 }
 
 GPlotterAppWindow *gplotter_app_window_new(GPlotterApp *app) {
-	GPlotterAppWindow *gp_win;
-	GtkWindow *win;
-
-	GtkWidget *headerbar;
-	GtkBuilder *hb_builder;
-	GObject *hb_obj;
-
-	GtkWidget *mw_container;
-	GtkBuilder *mwc_builder;
-	GObject *mwc_obj;
-
-	GtkWidget *grid_area;
-	GObject *ga_obj;
-	GdkGeometry ga_hints = {
-		.min_width = 400,
-		.min_height = 400,
-	};
-
-	gp_win = g_object_new(GPLOTTER_APP_WINDOW_TYPE, 
+	GPlotterAppWindow *gp_win = g_object_new(GPLOTTER_TYPE_APP_WINDOW,
 		"application", app,
-		"default-width", 800, "default-height", 600, 
-	NULL);
-	win = GTK_WINDOW(gp_win);
+		"default-width", 800,
+		"default-height", 600,
+		NULL);
 
 	// headerbar
-	hb_builder = gtk_builder_new_from_resource("/org/gtk/gplotter/headerbar.ui");
-	hb_obj = gtk_builder_get_object(hb_builder, "mw_headerbar");
-	headerbar = GTK_WIDGET(hb_obj);
-	gtk_window_set_titlebar(win, headerbar);
-	gtk_widget_show(headerbar);
+	g_autoptr(GtkBuilder) hb_builder = gtk_builder_new_from_resource("/org/gtk/gplotter/headerbar.ui");
+	GtkWidget *headerbar = GTK_WIDGET(gtk_builder_get_object(hb_builder, "mw_headerbar"));
+	gtk_window_set_titlebar(GTK_WINDOW(gp_win), headerbar);
 
 	// main window
-	mwc_builder = gtk_builder_new_from_resource("/org/gtk/gplotter/window.ui");
-	mwc_obj = gtk_builder_get_object(mwc_builder, "mw_container");
-	mw_container = GTK_WIDGET(mwc_obj);
-	gtk_container_add(GTK_CONTAINER(win), mw_container);
+	g_autoptr(GtkBuilder) mwc_builder = gtk_builder_new_from_resource("/org/gtk/gplotter/window.ui");
+	GtkWidget *mw_container = GTK_WIDGET(gtk_builder_get_object(mwc_builder, "mw_container"));
+	gtk_container_add(GTK_CONTAINER(gp_win), mw_container);
+
 	// mw: drawing widget
-	ga_obj = gtk_builder_get_object(mwc_builder, "grid_area");
-	grid_area = GTK_WIDGET(ga_obj);
-	gtk_window_set_geometry_hints(win, grid_area, &ga_hints,
-		GDK_HINT_MIN_SIZE);
-	g_signal_connect(ga_obj, "draw", G_CALLBACK(grid_draw2d), gp_win);
-	gtk_widget_show(mw_container);
-	
+	GtkWidget *grid_area = GTK_WIDGET(gtk_builder_get_object(mwc_builder, "grid_area"));
+
+	GdkGeometry ga_hints = { .min_width = 400, .min_height = 400 };
+	gtk_window_set_geometry_hints(GTK_WINDOW(gp_win), grid_area, &ga_hints, GDK_HINT_MIN_SIZE);
+
+	g_signal_connect(G_OBJECT(grid_area), "draw", G_CALLBACK(grid_draw2d), gp_win);
+
+	app->app_window = GTK_APPLICATION_WINDOW(gp_win);
+
+	gtk_widget_show_all(GTK_WIDGET(gp_win));
 	return gp_win;
 }
 

@@ -14,4 +14,4 @@ $(OBJECTS): %.o : %.c
 
 clean:
 	$(RM) $(OBJECTS) $(PROGRAM)
-	$(RM) resources.c
+	$(RM) resources.o resources.c

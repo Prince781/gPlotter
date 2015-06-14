@@ -1,7 +1,7 @@
+MAKE := $(MAKE) --no-print-directory
+
 all:
-	$(MAKE) -C res/
-	/bin/cp res/*.c src/resources.c
-	$(MAKE) -C src/
+	@$(MAKE) -C res/
+	@$(MAKE) -C src/
 clean:
-	$(MAKE) -C res/ clean
-	$(MAKE) -C src/ clean
+	@$(MAKE) -C src/ clean

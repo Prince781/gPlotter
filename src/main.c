@@ -20,7 +20,7 @@ static const char *descrs[] = {
 void print_help(void);
 
 int main(int argc, char *argv[]) {
-	GPFunction *f = gp_function_new("f", "x", "x^x^x");
+	g_autoptr(GPFunction) f = gp_function_new("f", "x", "x^x^x");
 
 	const gchar *name = gp_function_get_name(f);
 	const gchar *vars = gp_function_get_vars(f);
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 	double res = gp_function_eval(f, 3.0);
 	printf("%s(3.0) = %lf\n", name, res);
 
-	g_object_unref(f);
+	// g_object_unref(f);
 	return 0;
 }
 

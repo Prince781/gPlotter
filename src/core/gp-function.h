@@ -9,7 +9,7 @@ G_BEGIN_DECLS
 
 #define GP_TYPE_FUNCTION (gp_function_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE(GPFunction, gp_function, GP, FUNCTION, GObject)
+G_DECLARE_DERIVABLE_TYPE(GPFunction, gp_function, GP, FUNCTION, GObject);
 
 struct _GPFunctionClass {
 	GObjectClass parent_class;

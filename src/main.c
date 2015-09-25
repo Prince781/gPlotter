@@ -20,7 +20,7 @@ static const char *descrs[] = {
 void print_help(void);
 
 int main(int argc, char *argv[]) {
-	g_autoptr(GPFunction) f = gp_function_new("f", "x", "x^x^x");
+	g_autoptr(GPFunction) f = gp_function_new("f", "x", "x^3 - 2");
 
 	const gchar *name = gp_function_get_name(f);
 	const gchar *vars = gp_function_get_vars(f);

@@ -4,6 +4,8 @@
 #include "core/repl.h"
 #include "gui/gplotter_app.h"
 
+#include "core/gp-function.h"
+
 static struct option opts[] = {
 	{ "repl", no_argument, 0, 'r' },
 	{ "help", no_argument, 0, 'h' },
@@ -18,6 +20,21 @@ static const char *descrs[] = {
 void print_help(void);
 
 int main(int argc, char *argv[]) {
+	GPFunction *f = gp_function_new("f", "x", "x^x^x");
+
+	const gchar *name = gp_function_get_name(f);
+	const gchar *vars = gp_function_get_vars(f);
+	const gchar *body = gp_function_get_body(f);
+	printf("%s(%s) = %s\n", name, vars, body);
+
+	double res = gp_function_eval(f, 3.0);
+	printf("%s(3.0) = %lf\n", name, res);
+
+	g_object_unref(f);
+	return 0;
+}
+
+int oldmain(int argc, char *argv[]) {
 	int c, i;
 
 	while ((c = getopt_long(argc, argv, "rh", opts, &i)) != -1) {

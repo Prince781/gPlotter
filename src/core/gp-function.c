@@ -1,4 +1,4 @@
-#include "gp-function.h"
+#include "core.h"
 #include "program.h"
 #include "util/util.h"
 #include "util/u_string.h"
@@ -54,6 +54,18 @@ enum { ASSOC_LTR, ASSOC_RTL, UNKNOWN };
  * returns a position in the string after parsing
  */
 static const char *parse_num(const char *s, double *val);
+
+/**
+ * sets (*varptr) to point to a global GPVariable if one is found
+ * returns a position in the string after parsing
+ */
+static const char *parse_global_var(const char *s, GPVariable **varptr);
+
+/**
+ * sets (*funcptr) to point to a global GPFunction if one is found
+ * returns a position in the string after parsing
+ */
+static const char *parse_global_func(const char *s, GPFunction **funcptr);
 
 static double mult(double, double);
 static double fdiv(double, double);
@@ -229,22 +241,23 @@ double gp_function_eval(GPFunction *self, ...) {
 }
 
 static double gp_function_real_eval(GPFunction *self, va_list args) {
-//	struct stack_void_ptr *functions;
+	struct stack_void_ptr *functions;
 	struct stack_int *operators;
 	struct stack_double *operands;
 	const char *p, *p2;	// description pointers
-//	function *tf;	// temporary function (if found)
+	GPFunction *tf;	// temporary function (if found)
 	double val1, val2;	// temporary vals (for operator)
 	double res;	// temporary result
 	int op;		// temporary operator
 	GPFunctionPrivate *priv = gp_function_get_instance_private(self);
 	size_t nvars = strlen(priv->vars);
 	double *vals = malloc(sizeof(*vals) * nvars);
+	GPVariable *global_var = NULL;
 
 	for (size_t i=0; i<nvars; ++i)
 		vals[i] = va_arg(args, double);
 
-//	functions = stack_void_ptr_new(10);
+	functions = stack_void_ptr_new(10);
 	operators = stack_int_new(10);
 	operands = stack_double_new(10);
 
@@ -252,9 +265,12 @@ static double gp_function_real_eval(GPFunction *self, va_list args) {
 		if ((p2 = parse_num(p, &res)) > p) {	// if number
 			stack_push(operands, res);
 			p = p2;
-		} else if (strchr(priv->vars, *p) != NULL) {
+		} else if (strchr(priv->vars, *p) != NULL) {	// if variable
 			stack_push(operands, vals[strchr(priv->vars,*p) - priv->vars]);
 			++p;
+		} else if ((p2 = parse_global_var(p, &global_var)) > p) {
+			stack_push(operands, gp_variable_get_value(global_var));
+			p = p2;
 		} else if (is_operator(*p)) {
 			// pop all operators until we meet a '(' or an operator
 			// of lower precedence
@@ -334,7 +350,7 @@ static double gp_function_real_eval(GPFunction *self, va_list args) {
 	res = stack_empty(operands) ? 0 : stack_pop(operands);
 end:
 	free(vals);
-//	stack_destroy(functions);
+	stack_destroy(functions);
 	stack_destroy(operands);
 	stack_destroy(operators);
 
@@ -353,6 +369,26 @@ static const char *parse_num(const char *s, double *val) {
 
 	*val /= n;
 	return s;
+}
+
+static const char *parse_global_var(const char *s, GPVariable **varptr) {
+	char *var_name;
+	size_t vname_len;
+
+	var_name = get_word(s, &vname_len);
+	*varptr = gp_variables_find(var_name);
+	free(var_name);
+	return s + (*varptr != NULL ? vname_len : 0);
+}
+
+static const char *parse_global_func(const char *s, GPFunction **funcptr) {
+	char *func_name;
+	size_t fname_len;
+
+	func_name = get_word(s, &fname_len);
+	*funcptr = gp_functions_find(func_name);
+	free(func_name);
+	return s + (*funcptr != NULL ? fname_len : 0);
 }
 
 static double mult(double a, double b) {

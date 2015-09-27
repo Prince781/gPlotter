@@ -1,26 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
-#include "core/repl.h"
-#include "gui/gplotter_app.h"
-
-#include "core/gp-function.h"
-
-static struct option opts[] = {
-	{ "repl", no_argument, 0, 'r' },
-	{ "help", no_argument, 0, 'h' },
-	{ 0, 0, 0, 0 }
-};
-
-static const char *descrs[] = {
-	"start the read-eval-print-loop (REPL)",
-	"display help"
-};
-
-void print_help(void);
+#include <math.h>
+#include "core/core.h"
 
 int main(int argc, char *argv[]) {
-	g_autoptr(GPFunction) f = gp_function_new("f", "x", "x^3 - 2");
+	gp_init();
+	g_autoptr(GPFunction) f = gp_function_new("f", "x", "x^3 - 2 + pi");
+	g_autoptr(GPFunction) n_abs = gp_native_function_new("abs", (GCallback) &fabs, 1);
+	GPVariable *pi = gp_variables_find("pi");
 
 	const gchar *name = gp_function_get_name(f);
 	const gchar *vars = gp_function_get_vars(f);
@@ -30,34 +16,17 @@ int main(int argc, char *argv[]) {
 	double res = gp_function_eval(f, 3.0);
 	printf("%s(3.0) = %lf\n", name, res);
 
-	// g_object_unref(f);
+	/* native function */
+	name = gp_function_get_name(n_abs);
+	vars = gp_function_get_vars(n_abs);
+	body = gp_function_get_body(n_abs);
+	printf("%s(%s) = %s\n", name, vars, body);
+	res = gp_function_eval(n_abs, -3.0);
+	printf("%s(-3.0) = %lf\n", name, res);
+
+	/* global variables */
+	printf("%s = %lf\n", gp_variable_get_name(pi), gp_variable_get_value(pi));
+
+	gp_deinit();
 	return 0;
-}
-
-int oldmain(int argc, char *argv[]) {
-	int c, i;
-
-	while ((c = getopt_long(argc, argv, "rh", opts, &i)) != -1) {
-		if (c == 'r') {
-			repl_init();
-			repl_prompt("gPlotter");
-			repl_uninit();
-			return 0;
-		} else {
-			print_help();
-		}
-	}
-
-	g_autoptr(GPlotterApp) app = gplotter_app_new();
-	return g_application_run(G_APPLICATION(app), argc, argv);
-}
-
-void print_help(void) {
-	struct option *opt, *start = &opts[0];
-
-	printf("options:\n");
-	for (opt = &opts[0]; opt->name; ++opt)
-		printf(" [--%s|-%c] : %s\n", opt->name, 
-			opt->val, descrs[opt-start]);
-	exit(1);
 }

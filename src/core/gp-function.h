@@ -2,7 +2,6 @@
 #define _GP_FUNCTION_H
 
 #include <glib-object.h>
-#include <stddef.h>
 #include <stdarg.h>
 
 G_BEGIN_DECLS

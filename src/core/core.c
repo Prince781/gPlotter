@@ -9,42 +9,37 @@ GPContext *gp_context_default = NULL;
 
 #define create_var(name,val) g_autoptr(GPVariable) name = gp_variable_new(#name,val)
 
+static void gp_deinit_with_context(GPContext **default_ctx);
+
 void gp_init(void) {
-//	g_return_if_fail(!GP_IS_CONTEXT(gp_context_default));
 	gp_context_default = gp_context_new();
+	gp_init_with_context (&gp_context_default);
+}
+
+void gp_deinit(void) {
+	gp_deinit_with_context (&gp_context_default);
+}
+
+void gp_init_with_context(GPContext **default_ctx) {
+	g_return_if_fail(GP_IS_CONTEXT(*default_ctx));
 	create_var(pi, M_PI);
 	create_var(inf, INFINITY);
 	create_var(e, M_E);
 	create_var(phi, 1.61803398875);
-	gp_variables_add (pi);
-	gp_variables_add (inf);
-	gp_variables_add (e);
-	gp_variables_add (phi);
+
+	gp_context_variables_add (*default_ctx, pi);
+	gp_context_variables_add (*default_ctx, inf);
+	gp_context_variables_add (*default_ctx, e);
+	gp_context_variables_add (*default_ctx, phi);
 
 	for (struct native_func *p = &natives[0]; p->name; ++p) {
 		g_autoptr(GPFunction) func = gp_native_function_new(p->name, p->callback, p->params);
-		gp_functions_add (func);
+		gp_context_functions_add (*default_ctx, func);
 	}
 }
 
-gboolean gp_variables_add(GPVariable *variable) {
-	return gp_context_variables_add (gp_context_default, variable);
-}
-
-GPVariable *gp_variables_find(const gchar *name) {
-	return gp_context_variables_find (gp_context_default, name);
-}
-
-gboolean gp_functions_add(GPFunction *function) {
-	return gp_context_functions_add (gp_context_default, function);
-}
-
-GPFunction *gp_functions_find(const gchar *name) {
-	return gp_context_functions_find (gp_context_default, name);
-}
-
-void gp_deinit(void) {
-	g_return_if_fail(GP_IS_CONTEXT(gp_context_default));
-	g_object_unref (gp_context_default);
-	gp_context_default = NULL;
+static void gp_deinit_with_context(GPContext **default_ctx) {
+	g_return_if_fail(GP_IS_CONTEXT(*default_ctx));
+	g_object_unref (*default_ctx);
+	*default_ctx = NULL;
 }

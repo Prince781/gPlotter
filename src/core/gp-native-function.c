@@ -75,7 +75,7 @@ static void gp_native_function_dispose(GObject *gobject) {
 	GPNativeFunction *self = GP_NATIVE_FUNCTION(gobject);
 	GPNativeFunctionPrivate *priv = gp_native_function_get_instance_private(self);
 
-	g_log(GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
+	// g_log(GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
 	/* dispose references */
 	g_closure_unref(priv->closure);
 
@@ -117,7 +117,7 @@ static void gp_native_function_class_init(GPNativeFunctionClass *klass) {
 }
 
 static void gp_native_function_init(GPNativeFunction *self) {
-	g_log(GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
+	// g_log(GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
 }
 
 GPFunction *gp_native_function_new(const gchar *name,

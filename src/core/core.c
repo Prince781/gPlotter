@@ -10,7 +10,7 @@ GPContext *gp_context_default = NULL;
 #define create_var(name,val) g_autoptr(GPVariable) name = gp_variable_new(#name,val)
 
 void gp_init(void) {
-	g_return_if_fail(!GP_IS_CONTEXT(gp_context_default));
+//	g_return_if_fail(!GP_IS_CONTEXT(gp_context_default));
 	gp_context_default = gp_context_new();
 	create_var(pi, M_PI);
 	create_var(inf, INFINITY);

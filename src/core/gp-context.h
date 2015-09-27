@@ -3,7 +3,6 @@
 
 #include <glib-object.h>
 #include "gp-variable.h"
-#include "gp-function.h"
 
 G_BEGIN_DECLS
 
@@ -14,6 +13,8 @@ G_DECLARE_FINAL_TYPE(GPContext, gp_context, GP, CONTEXT, GObject);
 struct _GPContext {
 	GObject parent_instance;
 };
+
+#include "gp-function.h"
 
 /**
  * Creates a new execution context.
@@ -43,5 +44,7 @@ gboolean gp_context_functions_add(GPContext *self, GPFunction *function);
  * @return the function, or NULL if not found
  */
 GPFunction *gp_context_functions_find(GPContext *self, const gchar *name);
+
+G_END_DECLS
 
 #endif /* _GP_CONTEXT_H */

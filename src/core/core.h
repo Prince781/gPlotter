@@ -38,4 +38,4 @@ GPFunction *gp_functions_find(const gchar *name);
 /* deinitializes gPlotter data */
 void gp_deinit(void);
 
-#endif
+#endif /* _GP_CORE_H */

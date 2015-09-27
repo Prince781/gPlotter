@@ -1,4 +1,4 @@
-CFLAGS=-D_GNU_SOURCE -std=gnu11 $(shell pkg-config --cflags gtk+-3.0) -g
+CFLAGS=-D_GNU_SOURCE -std=gnu11 $(shell pkg-config --cflags gtk+-3.0) -g -ggdb3 -O0
 LDFLAGS=-lm -lreadline -ldyncall_s $(shell pkg-config --libs gtk+-3.0)
 PROGRAM=gPlotter
 SOURCES=$(shell find . -type f -name \*.c)

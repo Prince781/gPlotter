@@ -9,6 +9,7 @@
 #include <math.h>
 
 struct _GPFunctionPrivate {
+	GPContext *ctx;	/* execution context */
 	gchar *name;	/* name of function */
 	gchar *vars;	/* variables */
 	gchar *body;	/* body of function */
@@ -59,13 +60,13 @@ static const char *parse_num(const char *s, double *val);
  * sets (*varptr) to point to a global GPVariable if one is found
  * returns a position in the string after parsing
  */
-static const char *parse_global_var(const char *s, GPVariable **varptr);
+static const char *parse_global_var(GPContext *ctx, const char *s, GPVariable **varptr);
 
 /**
  * sets (*funcptr) to point to a global GPFunction if one is found
  * returns a position in the string after parsing
  */
-static const char *parse_global_func(const char *s, GPFunction **funcptr);
+static const char *parse_global_func(GPContext *ctx, const char *s, GPFunction **funcptr);
 
 static double mult(double, double);
 static double fdiv(double, double);
@@ -78,6 +79,7 @@ static double fact(double);
 enum {
 	PROP_0,
 
+	PROP_CONTEXT,
 	PROP_NAME,
 	PROP_VARS,
 	PROP_BODY,
@@ -96,6 +98,9 @@ static void gp_function_set_property(GObject *object,
 	GPFunctionPrivate *priv = gp_function_get_instance_private(self);
 
 	switch (property_id) {
+		case PROP_CONTEXT:
+			gp_function_set_context (self, g_value_get_object (value));
+			break;
 		case PROP_NAME:
 			g_free(priv->name);
 			priv->name = g_value_dup_string(value);
@@ -120,30 +125,34 @@ static void gp_function_get_property(GObject *object,
 		GValue *value,
 		GParamSpec *pspec) {
 	GPFunction *self = GP_FUNCTION(object);
-	GPFunctionPrivate *priv = gp_function_get_instance_private(self);
 
 	switch (property_id) {
-	case PROP_NAME:
-		g_value_set_string(value, priv->name);
-		break;
-	case PROP_VARS:
-		g_value_set_string(value, priv->vars);
-		break;
-	case PROP_BODY:
-		g_value_set_string(value, priv->body);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(object,
-				property_id, pspec);
-		break;
+		case PROP_CONTEXT:
+			g_value_set_object (value, gp_function_get_context (self));
+		case PROP_NAME:
+			g_value_set_string (value, gp_function_get_name (self));
+			break;
+		case PROP_VARS:
+			g_value_set_string (value, gp_function_get_vars (self));
+			break;
+		case PROP_BODY:
+			g_value_set_string (value, gp_function_get_body (self));
+			break;
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(object,
+					property_id, pspec);
+			break;
 	}
 }
 
 static void gp_function_dispose(GObject *gobject) {
 	GPFunction *self = GP_FUNCTION(gobject);
+	GPFunctionPrivate *priv = gp_function_get_instance_private(self);
 
 	g_log(GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
 	/* dispose references */
+	if (GP_IS_CONTEXT (priv->ctx))
+		g_object_remove_weak_pointer (G_OBJECT (priv->ctx), (gpointer *) &priv->ctx);
 
 	G_OBJECT_CLASS(gp_function_parent_class)->dispose(gobject);
 }
@@ -168,6 +177,12 @@ static void gp_function_class_init(GPFunctionClass *klass) {
 	/* set properties */
 	gobject_class->set_property = gp_function_set_property;
 	gobject_class->get_property = gp_function_get_property;
+	obj_properties[PROP_CONTEXT] = 
+		g_param_spec_object("ctx", "Context",
+				"The function's execution context (global defines).",
+				GP_TYPE_CONTEXT,
+				G_PARAM_READABLE | G_PARAM_WRITABLE |
+				G_PARAM_STATIC_STRINGS);
 	obj_properties[PROP_NAME] = 
 		g_param_spec_string("name", "Name of function",
 				"A function name, like 'f' or 'sin'",
@@ -197,9 +212,8 @@ static void gp_function_class_init(GPFunctionClass *klass) {
 }
 
 static void gp_function_init(GPFunction *self) {
-	// self->priv = gp_function_get_instance_private(self);
-	/* TODO: more code */
 	g_log(GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
+	gp_function_set_context(self, gp_context_default);
 }
 
 GPFunction *gp_function_new(const gchar *name,
@@ -210,6 +224,22 @@ GPFunction *gp_function_new(const gchar *name,
 			"vars", vars, 
 			"body", body, NULL);
 	return GP_FUNCTION(obj);
+}
+
+void gp_function_set_context(GPFunction *self, GPContext *ctx) {
+	GPFunctionPrivate *priv = gp_function_get_instance_private(self);
+
+	g_return_if_fail (GP_IS_CONTEXT (ctx));
+
+	if (GP_IS_CONTEXT (priv->ctx))
+		g_object_remove_weak_pointer (G_OBJECT (priv->ctx), (gpointer *) &priv->ctx);
+	priv->ctx = ctx;
+	g_object_add_weak_pointer (G_OBJECT (ctx), (gpointer *) &priv->ctx);
+}
+
+GPContext *gp_function_get_context(GPFunction *self) {
+	GPFunctionPrivate *priv = gp_function_get_instance_private(self);
+	return priv->ctx;
 }
 
 const gchar *gp_function_get_name(GPFunction *self) {
@@ -268,7 +298,7 @@ static double gp_function_real_eval(GPFunction *self, va_list args) {
 		} else if (strchr(priv->vars, *p) != NULL) {	// if variable
 			stack_push(operands, vals[strchr(priv->vars,*p) - priv->vars]);
 			++p;
-		} else if ((p2 = parse_global_var(p, &global_var)) > p) {
+		} else if ((p2 = parse_global_var(priv->ctx, p, &global_var)) > p) {
 			stack_push(operands, gp_variable_get_value(global_var));
 			p = p2;
 		} else if (is_operator(*p)) {
@@ -371,22 +401,22 @@ static const char *parse_num(const char *s, double *val) {
 	return s;
 }
 
-static const char *parse_global_var(const char *s, GPVariable **varptr) {
+static const char *parse_global_var(GPContext *ctx, const char *s, GPVariable **varptr) {
 	char *var_name;
 	size_t vname_len;
 
 	var_name = get_word(s, &vname_len);
-	*varptr = gp_variables_find(var_name);
+	*varptr = gp_context_variables_find(ctx, var_name);
 	free(var_name);
 	return s + (*varptr != NULL ? vname_len : 0);
 }
 
-static const char *parse_global_func(const char *s, GPFunction **funcptr) {
+static const char *parse_global_func(GPContext *ctx, const char *s, GPFunction **funcptr) {
 	char *func_name;
 	size_t fname_len;
 
 	func_name = get_word(s, &fname_len);
-	*funcptr = gp_functions_find(func_name);
+	*funcptr = gp_context_functions_find(ctx, func_name);
 	free(func_name);
 	return s + (*funcptr != NULL ? fname_len : 0);
 }

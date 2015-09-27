@@ -4,10 +4,11 @@
 #include "gp-function.h"
 #include "gp-variable.h"
 #include "gp-native-function.h"
+#include "gp-context.h"
 
-/* variables */
+extern GPContext *gp_context_default;
 
-/* initializes gPlotter data */
+/* initializes gPlotter data (a default context) */
 void gp_init(void);
 
 /**

@@ -5,14 +5,13 @@
 
 /* variables and functions */
 
-static GHashTable *variables = NULL;
-static GHashTable *functions = NULL;
+GPContext *gp_context_default = NULL;
 
 #define create_var(name,val) g_autoptr(GPVariable) name = gp_variable_new(#name,val)
 
 void gp_init(void) {
-	variables = g_hash_table_new_full(g_str_hash, g_str_equal,
-			NULL, g_object_unref);
+	g_return_if_fail(!GP_IS_CONTEXT(gp_context_default));
+	gp_context_default = gp_context_new();
 	create_var(pi, M_PI);
 	create_var(inf, INFINITY);
 	create_var(e, M_E);
@@ -22,8 +21,6 @@ void gp_init(void) {
 	gp_variables_add (e);
 	gp_variables_add (phi);
 
-	functions = g_hash_table_new_full(g_str_hash, g_str_equal,
-			NULL, g_object_unref);
 	for (struct native_func *p = &natives[0]; p->name; ++p) {
 		g_autoptr(GPFunction) func = gp_native_function_new(p->name, p->callback, p->params);
 		gp_functions_add (func);
@@ -31,34 +28,23 @@ void gp_init(void) {
 }
 
 gboolean gp_variables_add(GPVariable *variable) {
-	const gchar *name = gp_variable_get_name(variable);
-	if (g_hash_table_contains(variables, name)) {
-		/* TODO: error message */
-		return FALSE;
-	}
-	g_hash_table_insert(variables, name, g_object_ref(variable));
-	return TRUE;
+	return gp_context_variables_add (gp_context_default, variable);
 }
 
 GPVariable *gp_variables_find(const gchar *name) {
-	return g_hash_table_lookup (variables, name);
+	return gp_context_variables_find (gp_context_default, name);
 }
 
 gboolean gp_functions_add(GPFunction *function) {
-	const gchar *name = gp_function_get_name(function);
-	if (g_hash_table_contains(functions, name)) {
-		/* TODO: error message */
-		return FALSE;
-	}
-	g_hash_table_insert(functions, name, g_object_ref(function));
-	return TRUE;
+	return gp_context_functions_add (gp_context_default, function);
 }
 
 GPFunction *gp_functions_find(const gchar *name) {
-	return g_hash_table_lookup (functions, name);
+	return gp_context_functions_find (gp_context_default, name);
 }
 
 void gp_deinit(void) {
-	g_hash_table_destroy(variables);
-	g_hash_table_destroy(functions);
+	g_return_if_fail(GP_IS_CONTEXT(gp_context_default));
+	g_object_unref (gp_context_default);
+	gp_context_default = NULL;
 }

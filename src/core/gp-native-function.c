@@ -59,7 +59,7 @@ static void gp_native_function_get_property(GObject *object,
 
 	switch (property_id) {
 		case PROP_CLOSURE:
-			g_value_set_object(value, priv->closure);
+			g_value_set_pointer(value, priv->closure);
 			break;
 		case PROP_PARAMS:
 			g_value_set_uint(value, priv->params);

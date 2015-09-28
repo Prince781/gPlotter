@@ -9,7 +9,7 @@ gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cair
 
 ##Feature List
 * REPL ( **in progress** )
-  - dynamic calling of native functions (`sin`,`erf`,`exp`,etc) ( **done** )
+  - use GMainLoop or something else
   - function evaluation ( **mostly** )
   - defining functions via REPL ( **todo** )
   - easy history access ( **todo** )
@@ -17,6 +17,7 @@ gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cair
 * Core ( **in progress** )
   - Evaluating infix statements ( **done** )
   - Value substitution for variables ( **done** )
+  - Function execution contexts for global defines ( **mostly** )
   - Implicit functions ( **todo** )
 * Exporting and Saving ( **todo** )
   - Export ( **todo** )
@@ -27,6 +28,5 @@ gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cair
   - Save As (MathML XML document with additional info as .gplt) ( **todo** )
 
 ##Dependencies
+- GLib
 - GTK+ 3.16 for UI
-- GNU Readline 6.3 for REPL
-- dyncall (optional), for using library math functions (like `sin` or `erf`) in equations

@@ -72,6 +72,7 @@ GPVariable *gp_context_variables_find(GPContext *self, const gchar *name) {
 gboolean gp_context_functions_add(GPContext *self, GPFunction *function) {
 	GPContextPrivate *priv = gp_context_get_instance_private(self);
 	const gchar *name = gp_function_get_name(function);
+	
 	if (g_hash_table_contains(priv->functions, name)) {
 		/* TODO: error message */
 		return FALSE;

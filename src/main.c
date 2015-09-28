@@ -5,7 +5,7 @@
 int main(int argc, char *argv[]) {
 	gp_init();
 	g_autoptr(GPFunction) f = gp_function_new("f", "x", "x^3 - 2 + pi");
-	g_autoptr(GPFunction) n_abs = gp_native_function_new("abs", (GCallback) &fabs, 1);
+	GPFunction *n_abs = gp_functions_find("abs");
 	GPVariable *pi = gp_variables_find("pi");
 
 	const gchar *name = gp_function_get_name(f);

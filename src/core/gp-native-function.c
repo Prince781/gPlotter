@@ -123,7 +123,7 @@ static void gp_native_function_init(GPNativeFunction *self) {
 GPFunction *gp_native_function_new(const gchar *name,
 		GCallback native,
 		guint nparams) {
-	// g_return_val_if_fail(nparams > 26, NULL);
+	g_return_val_if_fail(nparams <= 26, NULL);
 	gchar buf[27];
 	gchar c = 'a';
 	guint i;

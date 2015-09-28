@@ -16,7 +16,7 @@ struct _GPNativeFunction {
 };
 
 /**
- * Creates a new native functions.
+ * Creates a new native function.
  * @nparams must be less than or equal to 26
  */
 GPFunction *gp_native_function_new(const gchar *name,

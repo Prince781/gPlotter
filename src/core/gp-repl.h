@@ -2,7 +2,6 @@
 #define _GP_REPL_H
 
 #include <glib-object.h>
-#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -17,10 +16,10 @@ GType gp_repl_state_get_type(void);
 
 #define GP_TYPE_REPL (gp_repl_get_type ())
 
-G_DECLARE_FINAL_TYPE(GPRepl, gp_repl, GP, REPL, GApplication);
+G_DECLARE_FINAL_TYPE(GPRepl, gp_repl, GP, REPL, GObject);
 
 struct _GPRepl {
-	GApplication parent_instance;
+	GObject parent_instance;
 };
 
 GPRepl *gp_repl_new(void);

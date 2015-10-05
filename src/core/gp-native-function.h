@@ -18,8 +18,12 @@ struct _GPNativeFunction
 };
 
 /**
- * Creates a new native function.
- * @nparams must be less than or equal to 26
+ * gp_native_function_new: (constructor)
+ * @name: the name of the function
+ * @native: (scope notified): a callback
+ * @nparams: number of parameters for the function
+ * 
+ * Returns: (transfer full): a new #GPNativeFunction
  */
 GPFunction *gp_native_function_new (const gchar *name,
                                     GCallback native,

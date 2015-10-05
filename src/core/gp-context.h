@@ -18,31 +18,45 @@ struct _GPContext
 #include "gp-function.h"
 
 /**
- * Creates a new execution context.
+ * gp_context_new: (constructor)
+ *
+ * Return: (transfer full): a new execution context.
  */
 GPContext *gp_context_new (void);
 
 /**
- * stores @variable internally as a global var
- * @return if adding was successful or not
+ * gp_context_variables_add:
+ *
+ * @self: a #GPContext
+ * @variable: a #GPVariable, stored internally as a global var
+ * Returns: if adding was successful or not
  */
 gboolean gp_context_variables_add (GPContext *self, GPVariable *variable);
 
 /**
- * searches for variable matching @name
- * @return the variable, or NULL if not found
+ * gp_context_variables_find:
+ *
+ * @self: a #GPContext
+ * @name: the name of a #GPVariable to find
+ * Returns: (nullable) (transfer none): the variable, or NULL if not found
  */
 GPVariable *gp_context_variables_find (GPContext *self, const gchar *name);
 
 /**
- * stores @function internally as a global function
- * @return if adding was successful or not
+ * gp_context_functions_add:
+ *
+ * @self: a #GPContext
+ * @function: a #GPFunction, stored internally as a global function
+ * Returns: if adding was successful or not
  */
 gboolean gp_context_functions_add (GPContext *self, GPFunction *function);
 
 /**
- * searches for a function matching @name
- * @return the function, or NULL if not found
+ * gp_context_functions_find:
+ *
+ * @self: a #GPContext
+ * @name: the name of the function to search for
+ * Returns: (nullable) (transfer none): a #GPFunction, or NULL if not found
  */
 GPFunction *gp_context_functions_find (GPContext *self, const gchar *name);
 

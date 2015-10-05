@@ -8,7 +8,7 @@
 
 struct _GPFunctionPrivate
 {
-    GPContext *ctx; /* execution context */
+    GPContext *context; /* execution context */
     gchar *name;    /* name of function */
     gchar *vars;    /* variables */
     gchar *body;    /* body of function */
@@ -19,7 +19,7 @@ typedef struct _GPFunctionPrivate GPFunctionPrivate;
 G_DEFINE_TYPE_WITH_PRIVATE (GPFunction, gp_function, G_TYPE_OBJECT);
 
 /* private methods */
-static double gp_function_real_eval (GPFunction *self, va_list args);
+static double gp_function_real_evalv (GPFunction *self, va_list args);
 
 /* helper functions */
 
@@ -67,14 +67,14 @@ static const char *parse_num (const char *s, double *val);
  * sets (*varptr) to point to a global GPVariable if one is found
  * returns a position in the string after parsing
  */
-static const char *parse_global_var (GPContext *ctx, const char *s,
+static const char *parse_global_var (GPContext *context, const char *s,
                                      GPVariable **varptr);
 
 /**
  * sets (*funcptr) to point to a global GPFunction if one is found
  * returns a position in the string after parsing
  */
-static const char *parse_global_func (GPContext *ctx, const char *s,
+static const char *parse_global_func (GPContext *context, const char *s,
                                       GPFunction **funcptr);
 
 static double mult (double, double);
@@ -166,8 +166,8 @@ static void gp_function_dispose (GObject *gobject)
 
     g_log (GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
     /* dispose references */
-    if (GP_IS_CONTEXT (priv->ctx))
-        g_object_remove_weak_pointer (G_OBJECT (priv->ctx), (gpointer *) &priv->ctx);
+    if (GP_IS_CONTEXT (priv->context))
+        g_object_remove_weak_pointer (G_OBJECT (priv->context), (gpointer *) &priv->context);
 
     G_OBJECT_CLASS (gp_function_parent_class)->dispose (gobject);
 }
@@ -189,13 +189,14 @@ static void gp_function_class_init (GPFunctionClass *klass)
     GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 
     /* GPFunctionClass */
-    klass->eval = gp_function_real_eval;
+    klass->evalv = gp_function_real_evalv;
 
     /* set properties */
     gobject_class->set_property = gp_function_set_property;
     gobject_class->get_property = gp_function_get_property;
+
     obj_properties[PROP_CONTEXT] =
-        g_param_spec_object ("ctx", "Context",
+        g_param_spec_object ("context", "Context",
                              "The function's execution context (global defines).",
                              GP_TYPE_CONTEXT,
                              G_PARAM_READABLE | G_PARAM_WRITABLE |
@@ -245,22 +246,22 @@ GPFunction *gp_function_new (const gchar *name,
     return GP_FUNCTION (obj);
 }
 
-void gp_function_set_context (GPFunction *self, GPContext *ctx)
+void gp_function_set_context (GPFunction *self, GPContext *context)
 {
     GPFunctionPrivate *priv = gp_function_get_instance_private (self);
 
-    g_return_if_fail (GP_IS_CONTEXT (ctx));
+    g_return_if_fail (GP_IS_CONTEXT (context));
 
-    if (GP_IS_CONTEXT (priv->ctx))
-        g_object_remove_weak_pointer (G_OBJECT (priv->ctx), (gpointer *) &priv->ctx);
-    priv->ctx = ctx;
-    g_object_add_weak_pointer (G_OBJECT (ctx), (gpointer *) &priv->ctx);
+    if (GP_IS_CONTEXT (priv->context))
+        g_object_remove_weak_pointer (G_OBJECT (priv->context), (gpointer *) &priv->context);
+    priv->context = context;
+    g_object_add_weak_pointer (G_OBJECT (context), (gpointer *) &priv->context);
 }
 
 GPContext *gp_function_get_context (GPFunction *self)
 {
     GPFunctionPrivate *priv = gp_function_get_instance_private (self);
-    return priv->ctx;
+    return priv->context;
 }
 
 const gchar *gp_function_get_name (GPFunction *self)
@@ -281,7 +282,6 @@ const gchar *gp_function_get_body (GPFunction *self)
     return priv->body;
 }
 
-/* GP: */
 double gp_function_eval (GPFunction *self, ...)
 {
     g_return_if_fail (GP_IS_FUNCTION (self));
@@ -290,13 +290,13 @@ double gp_function_eval (GPFunction *self, ...)
 
     g_log (GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
     va_start (dp, self);
-    res = GP_FUNCTION_GET_CLASS (self)->eval (self, dp);
+    res = GP_FUNCTION_GET_CLASS (self)->evalv (self, dp);
     va_end (dp);
 
     return res;
 }
 
-static double gp_function_real_eval (GPFunction *self, va_list args)
+static double gp_function_real_evalv (GPFunction *self, va_list args)
 {
     struct stack_void_ptr *functions;
     struct stack_int *operators;
@@ -330,7 +330,7 @@ static double gp_function_real_eval (GPFunction *self, va_list args)
                     stack_push (operands, vals[strchr (priv->vars,*p) - priv->vars]);
                     ++p;
                 }
-            else if ((p2 = parse_global_var (priv->ctx, p, &global_var)) > p)
+            else if ((p2 = parse_global_var (priv->context, p, &global_var)) > p)
                 {
                     stack_push (operands, gp_variable_get_value (global_var));
                     p = p2;
@@ -465,26 +465,26 @@ static const char *parse_num (const char *s, double *val)
     return s;
 }
 
-static const char *parse_global_var (GPContext *ctx, const char *s,
+static const char *parse_global_var (GPContext *context, const char *s,
                                      GPVariable **varptr)
 {
     char *var_name;
     size_t vname_len;
 
     var_name = get_word (s, &vname_len);
-    *varptr = gp_context_variables_find (ctx, var_name);
+    *varptr = gp_context_variables_find (context, var_name);
     free (var_name);
     return s + (*varptr != NULL ? vname_len : 0);
 }
 
-static const char *parse_global_func (GPContext *ctx, const char *s,
+static const char *parse_global_func (GPContext *context, const char *s,
                                       GPFunction **funcptr)
 {
     char *func_name;
     size_t fname_len;
 
     func_name = get_word (s, &fname_len);
-    *funcptr = gp_context_functions_find (ctx, func_name);
+    *funcptr = gp_context_functions_find (context, func_name);
     free (func_name);
     return s + (*funcptr != NULL ? fname_len : 0);
 }

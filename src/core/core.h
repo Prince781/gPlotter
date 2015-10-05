@@ -8,15 +8,20 @@
 
 extern GPContext *gp_context_default;
 
-/* initializes gPlotter data (with a default context) */
+/* gp_init:
+ * initializes gPlotter data (with a default context)
+ */
 void gp_init (void);
 
-/* deinitializes gPlotter data (for a default context) */
+/* gp_deinit:
+ * deinitializes gPlotter data (for a default context)
+ */
 void gp_deinit (void);
 
 /**
- * initializes (*default_ctx) with some default
- * global definitions
+ * gp_init_with_context:
+ * @default_ctx: (out callee-allocates): initialized with some default
+ * 		definitions and variables
  */
 void gp_init_with_context (GPContext **default_ctx);
 

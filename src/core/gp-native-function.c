@@ -14,7 +14,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GPNativeFunction, gp_native_function,
                             GP_TYPE_FUNCTION);
 
 /* virtual methods */
-static double gp_native_function_real_eval (GPFunction *self, va_list args);
+static double gp_native_function_real_evalv (GPFunction *self, va_list args);
 
 enum
 {
@@ -101,11 +101,17 @@ static void gp_native_function_class_init (GPNativeFunctionClass *klass)
     GPFunctionClass *parent_class = GP_FUNCTION_CLASS (klass);
 
     /* GPFunctionClass */
-    parent_class->eval = gp_native_function_real_eval;
+    parent_class->evalv = gp_native_function_real_evalv;
 
     /* set properties */
     gobject_class->set_property = gp_native_function_set_property;
     gobject_class->get_property = gp_native_function_get_property;
+
+    /**
+     * GPNativeFunction:closure: (type GClosure)
+     *
+     * Holds a function to invoke later
+     */
     obj_properties[PROP_CLOSURE] =
         g_param_spec_pointer ("closure", "Function to invoke",
                               "Holds a function to invoke later",
@@ -152,7 +158,7 @@ GPFunction *gp_native_function_new (const gchar *name,
     return GP_FUNCTION (obj);
 }
 
-static double gp_native_function_real_eval (GPFunction *self, va_list args)
+static double gp_native_function_real_evalv (GPFunction *self, va_list args)
 {
     g_return_if_fail (GP_IS_NATIVE_FUNCTION (self));
     GPNativeFunction *inst = GP_NATIVE_FUNCTION (self);

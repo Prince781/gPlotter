@@ -8,6 +8,7 @@ AC_PROG_CC
 
 PKG_CHECK_MODULES([GLIB], [glib-2.0])
 PKG_CHECK_MODULES([GOBJECT], [gobject-2.0])
+PKG_CHECK_MODULES([GIR], [gobject-introspection-1.0])
 
 AC_CONFIG_FILES([Makefile
 		 src/Makefile

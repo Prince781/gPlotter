@@ -1,13 +1,13 @@
 #ifndef _STACK_H
 #define _STACK_H
 
-#define STACK_MINSIZE	10
+#define STACK_MINSIZE   10
 
 #define STACK_DEFINE(type, name) \
 struct stack_##name { \
-	type *data; \
-	int top;	/* position in stack */ \
-	int maxsize;	/* maximum size of stack */ \
+    type *data; \
+    int top;    /* position in stack */ \
+    int maxsize;    /* maximum size of stack */ \
 }; \
 \
 /* maxsize is initial; stack can grow if necessary */ \
@@ -31,13 +31,13 @@ void stack_##name##_destroy(struct stack_##name *s);
 
 #define stack_size(s) ((s)->top + 1)
 
-STACK_DEFINE(int, int)
-STACK_DEFINE(unsigned, unsigned)
-STACK_DEFINE(long, long)
-STACK_DEFINE(unsigned long, unsigned_long)
-STACK_DEFINE(double, double)
-STACK_DEFINE(long double, long_double)
-STACK_DEFINE(void *, void_ptr)
+STACK_DEFINE (int, int)
+STACK_DEFINE (unsigned, unsigned)
+STACK_DEFINE (long, long)
+STACK_DEFINE (unsigned long, unsigned_long)
+STACK_DEFINE (double, double)
+STACK_DEFINE (long double, long_double)
+STACK_DEFINE (void *, void_ptr)
 
 #define stack_push(s, item) _Generic((s), \
 struct stack_int *: stack_int_push, \
@@ -92,4 +92,4 @@ struct stack_unsigned_long *: stack_unsigned_long_destroy, \
 struct stack_double *: stack_double_destroy, \
 struct stack_long_double *: stack_long_double_destroy, \
 struct stack_void_ptr *: stack_void_ptr_destroy)(s)
-#endif	/* _STACK_H */
+#endif  /* _STACK_H */

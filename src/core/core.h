@@ -9,16 +9,16 @@
 extern GPContext *gp_context_default;
 
 /* initializes gPlotter data (with a default context) */
-void gp_init(void);
+void gp_init (void);
 
 /* deinitializes gPlotter data (for a default context) */
-void gp_deinit(void);
+void gp_deinit (void);
 
 /**
  * initializes (*default_ctx) with some default
  * global definitions
  */
-void gp_init_with_context(GPContext **default_ctx);
+void gp_init_with_context (GPContext **default_ctx);
 
 /* convenience macros */
 #define gp_variables_find(name) gp_context_variables_find (gp_context_default, name)

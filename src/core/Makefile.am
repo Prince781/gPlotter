@@ -11,4 +11,4 @@ libgplotter_core_la_SOURCES = \
       stack.c
 
 libgplotter_core_la_CFLAGS = -g $(GOBJECT_CFLAGS)
-# libgplotter_core_la_LIBADD = $(GOBJECT_LIBS) -lm
+libgplotter_core_la_LIBADD = $(GOBJECT_LIBS) -lm $(GIR_LIBS)

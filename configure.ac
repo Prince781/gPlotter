@@ -1,0 +1,22 @@
+AC_INIT([gplotter], [0.1a], [princetonf@optonline.net])
+
+AM_INIT_AUTOMAKE([foreign])
+LT_INIT
+
+# Check for required programs and packages
+AC_PROG_CC
+
+PKG_CHECK_MODULES([GLIB], [glib-2.0])
+PKG_CHECK_MODULES([GOBJECT], [gobject-2.0])
+
+AC_CONFIG_FILES([Makefile
+		 src/Makefile
+		 src/core/Makefile])
+
+AC_OUTPUT
+
+echo "
+	${PACKAGE_NAME} ${PACKAGE_VERSION}
+	Installation directory prefix: ${prefix}
+	Compilation command: '${CC} ${CFLAGS} ${LDFLAGS}'
+"

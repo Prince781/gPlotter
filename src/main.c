@@ -14,6 +14,7 @@ int main (int argc, char *argv[])
     const gchar *body = gp_function_get_body (f);
     printf ("%s(%s) = %s\n", name, vars, body);
 
+
     double res = gp_function_eval (f, 3.0);
     printf ("%s(3.0) = %lf\n", name, res);
 

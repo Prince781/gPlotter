@@ -1,11 +1,9 @@
 #include "core.h"
 #include "program.h"
-#include "util/util.h"
-#include "util/u_string.h"
-#include "ds/stack.h"
+#include "stack.h"
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <ctype.h>	/* isalnum */
 #include <math.h>
 
 struct _GPFunctionPrivate {
@@ -23,6 +21,14 @@ G_DEFINE_TYPE_WITH_PRIVATE(GPFunction, gp_function, G_TYPE_OBJECT);
 static double gp_function_real_eval(GPFunction *self, va_list args);
 
 /* helper functions */
+
+/**
+ * returns the next word from str on
+ * modifies *len
+ * returns a newly-allocated string, even if *len=0
+ * must be freed
+ */
+static char *get_word(const char *str, size_t *len);
 
 #define is_operand(c) (isalnum(c) || c=='.')
 
@@ -385,6 +391,15 @@ end:
 	stack_destroy(operators);
 
 	return res;
+}
+
+static char *get_word(const char *str, size_t *len) {
+	char *cpy = strdup(str);
+
+	for (*len=0; isalnum(cpy[*len]) || cpy[*len] == '_'; ++*len)
+		;
+	cpy[*len] = '\0';
+	return cpy;
 }
 
 static const char *parse_num(const char *s, double *val) {

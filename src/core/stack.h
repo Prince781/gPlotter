@@ -1,7 +1,6 @@
 #ifndef _STACK_H
 #define _STACK_H
 
-#include "../util/u_string.h"
 #define STACK_MINSIZE	10
 
 #define STACK_DEFINE(type, name) \

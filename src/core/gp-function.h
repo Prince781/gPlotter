@@ -8,7 +8,7 @@ G_BEGIN_DECLS
 
 #define GP_TYPE_FUNCTION (gp_function_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GPFunction, gp_function, GP, FUNCTION, GObject);
+G_DECLARE_DERIVABLE_TYPE (GPFunction, gp_function, GP, FUNCTION, GObject)
 
 struct _GPFunctionClass
 {
@@ -31,7 +31,7 @@ struct _GPFunctionClass
  * gp_function_new: (constructor)
  *
  * @name: the name of the function
- * @vars: (array zero-terminated=1) (element-type char):
+ * @vars: (array zero-terminated=1) (element-type char): a list of variables
  * @body: a description of the function
  * Returns: (transfer full): a new function
  */

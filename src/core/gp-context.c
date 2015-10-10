@@ -47,9 +47,9 @@ static void gp_context_init (GPContext *self)
 
     g_log (GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
     priv->variables = g_hash_table_new_full (g_str_hash, g_str_equal,
-                      NULL, g_object_unref);
+                      g_free, g_object_unref);
     priv->functions = g_hash_table_new_full (g_str_hash, g_str_equal,
-                      NULL, g_object_unref);
+                      g_free, g_object_unref);
 }
 
 GPContext *gp_context_new (void)
@@ -68,7 +68,7 @@ gboolean gp_context_variables_add (GPContext *self, GPVariable *variable)
             /* TODO: error message */
             return FALSE;
         }
-    g_hash_table_insert (priv->variables, name, g_object_ref (variable));
+    g_hash_table_insert (priv->variables, g_strdup(name), g_object_ref (variable));
     return TRUE;
 }
 
@@ -88,7 +88,7 @@ gboolean gp_context_functions_add (GPContext *self, GPFunction *function)
             /* TODO: error message */
             return FALSE;
         }
-    g_hash_table_insert (priv->functions, name, g_object_ref (function));
+    g_hash_table_insert (priv->functions, g_strdup(name), g_object_ref (function));
     return TRUE;
 }
 

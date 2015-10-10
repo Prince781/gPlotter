@@ -10,6 +10,12 @@ test -z "$srcdir" && srcdir=.
 	exit 1
 }
 
+datadir=$srcdir/data
+test -d "$datadir" || mkdir -p $datadir
+
+libdir=$srcdir/libs
+test -d "$libdir" || mkdir -p $libdir
+
 touch ChangeLog
 touch INSTALL
 

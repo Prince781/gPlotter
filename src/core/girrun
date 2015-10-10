@@ -1,1 +1,0 @@
-g-ir-scanner --library=libgplotter-core.la --namespace=GP --nsversion=0.1 --symbol-prefix=gp --include=GObject-2.0 --include=GLib-2.0  --output=gplotter-core-0.1.gir --warn-all *.[ch]

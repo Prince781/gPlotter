@@ -2,8 +2,7 @@
 #include "program.h"
 #include <string.h>
 
-struct _GPNativeFunctionPrivate
-{
+struct _GPNativeFunctionPrivate {
     GClosure *closure;  /* contains our native function */
     guint params;   /* number of parameters */
 };
@@ -16,8 +15,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GPNativeFunction, gp_native_function,
 /* virtual methods */
 static double gp_native_function_real_evalv (GPFunction *self, va_list args);
 
-enum
-{
+enum {
     PROP_0,
 
     PROP_CLOSURE,
@@ -38,21 +36,20 @@ static void gp_native_function_set_property (GObject *object,
     GPNativeFunctionPrivate *priv = gp_native_function_get_instance_private (self);
     GClosure *data;
 
-    switch (property_id)
-        {
-        case PROP_CLOSURE:
-            g_free (priv->closure);
-            data = g_value_get_pointer (value);
-            priv->closure = data;
-            break;
-        case PROP_PARAMS:
-            priv->params = g_value_get_uint (value);
-            break;
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
-                                               property_id, pspec);
-            break;
-        }
+    switch (property_id) {
+    case PROP_CLOSURE:
+        g_free (priv->closure);
+        data = g_value_get_pointer (value);
+        priv->closure = data;
+        break;
+    case PROP_PARAMS:
+        priv->params = g_value_get_uint (value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+                                           property_id, pspec);
+        break;
+    }
 }
 
 static void gp_native_function_get_property (GObject *object,
@@ -63,19 +60,18 @@ static void gp_native_function_get_property (GObject *object,
     GPNativeFunction *self = GP_NATIVE_FUNCTION (self);
     GPNativeFunctionPrivate *priv = gp_native_function_get_instance_private (self);
 
-    switch (property_id)
-        {
-        case PROP_CLOSURE:
-            g_value_set_pointer (value, priv->closure);
-            break;
-        case PROP_PARAMS:
-            g_value_set_uint (value, priv->params);
-            break;
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
-                                               property_id, pspec);
-            break;
-        }
+    switch (property_id) {
+    case PROP_CLOSURE:
+        g_value_set_pointer (value, priv->closure);
+        break;
+    case PROP_PARAMS:
+        g_value_set_uint (value, priv->params);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+                                           property_id, pspec);
+        break;
+    }
 }
 
 static void gp_native_function_dispose (GObject *gobject)
@@ -166,12 +162,11 @@ static double gp_native_function_real_evalv (GPFunction *self, va_list args)
     GValue *vals = g_slice_alloc0 (sizeof (GValue) * priv->params);
     GValue retval = G_VALUE_INIT;
 
-    for (guint i=0; i<priv->params; ++i)
-        {
-            memset (vals+i, 0, sizeof (vals[i]));
-            g_value_init (vals+i, G_TYPE_DOUBLE);
-            g_value_set_double (vals+i, va_arg (args, double));
-        }
+    for (guint i=0; i<priv->params; ++i) {
+        memset (vals+i, 0, sizeof (vals[i]));
+        g_value_init (vals+i, G_TYPE_DOUBLE);
+        g_value_set_double (vals+i, va_arg (args, double));
+    }
     g_value_init (&retval, G_TYPE_DOUBLE);
 
     /* call our native function */

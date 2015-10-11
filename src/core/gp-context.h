@@ -10,8 +10,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GPContext, gp_context, GP, CONTEXT, GObject);
 
-struct _GPContext
-{
+struct _GPContext {
     GObject parent_instance;
 };
 

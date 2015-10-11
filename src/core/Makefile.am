@@ -5,7 +5,6 @@ libgplotter_core_la_SOURCES = \
       gp-function.c \
       gp-native-function.c \
       gp-variable.c \
-      gp-repl.c \
       native.c \
       core.c \
       stack.c

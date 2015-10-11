@@ -21,7 +21,7 @@ void gp_deinit (void);
 /**
  * gp_init_with_context:
  * @default_ctx: (out callee-allocates): initialized with some default
- * 		definitions and variables
+ *      definitions and variables
  */
 void gp_init_with_context (GPContext **default_ctx);
 

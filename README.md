@@ -8,7 +8,7 @@ A neat little program for displaying the output of functions in various ways, am
 gPlotter is a free program for Linux, written in C, which uses the GTK+ and Cairo libraries for UI element and graphics rendering, respectively.
 
 ##Feature List
-* REPL ( **in progress** )
+* REPL ( **todo** )
   - use GMainLoop or something else
   - function evaluation ( **mostly** )
   - defining functions via REPL ( **todo** )

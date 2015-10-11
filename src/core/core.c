@@ -35,12 +35,11 @@ void gp_init_with_context (GPContext **default_ctx)
     gp_context_variables_add (*default_ctx, e);
     gp_context_variables_add (*default_ctx, phi);
 
-    for (struct native_func *p = &natives[0]; p->name; ++p)
-        {
-            g_autoptr (GPFunction) func = gp_native_function_new (p->name, p->callback,
-                                          p->params);
-            gp_context_functions_add (*default_ctx, func);
-        }
+    for (struct native_func *p = &natives[0]; p->name; ++p) {
+        g_autoptr (GPFunction) func = gp_native_function_new (p->name, p->callback,
+                                      p->params);
+        gp_context_functions_add (*default_ctx, func);
+    }
 }
 
 static void gp_deinit_with_context (GPContext **default_ctx)

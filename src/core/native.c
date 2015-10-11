@@ -4,8 +4,7 @@
 #define function(func, params) { #func, (GCallback) &func, params }
 #define function_custom(name, func, params) { name, (GCallback) &func, params }
 
-struct native_func natives[] =
-{
+struct native_func natives[] = {
     function_custom ("abs",  fabs,   1),
     /* trigonometric functions */
     function (sin,   1),

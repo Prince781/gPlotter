@@ -1,8 +1,7 @@
 #include "gp-context.h"
 #include "program.h"
 
-struct _GPContextPrivate
-{
+struct _GPContextPrivate {
     GHashTable *variables;
     GHashTable *functions;
 };
@@ -63,12 +62,11 @@ gboolean gp_context_variables_add (GPContext *self, GPVariable *variable)
     GPContextPrivate *priv = gp_context_get_instance_private (self);
     const gchar *name = gp_variable_get_name (variable);
 
-    if (g_hash_table_contains (priv->variables, name))
-        {
-            /* TODO: error message */
-            return FALSE;
-        }
-    g_hash_table_insert (priv->variables, g_strdup(name), g_object_ref (variable));
+    if (g_hash_table_contains (priv->variables, name)) {
+        /* TODO: error message */
+        return FALSE;
+    }
+    g_hash_table_insert (priv->variables, g_strdup (name), g_object_ref (variable));
     return TRUE;
 }
 
@@ -83,12 +81,11 @@ gboolean gp_context_functions_add (GPContext *self, GPFunction *function)
     GPContextPrivate *priv = gp_context_get_instance_private (self);
     const gchar *name = gp_function_get_name (function);
 
-    if (g_hash_table_contains (priv->functions, name))
-        {
-            /* TODO: error message */
-            return FALSE;
-        }
-    g_hash_table_insert (priv->functions, g_strdup(name), g_object_ref (function));
+    if (g_hash_table_contains (priv->functions, name)) {
+        /* TODO: error message */
+        return FALSE;
+    }
+    g_hash_table_insert (priv->functions, g_strdup (name), g_object_ref (function));
     return TRUE;
 }
 

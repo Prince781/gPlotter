@@ -6,8 +6,7 @@
 #include <ctype.h>  /* isalnum */
 #include <math.h>
 
-struct _GPFunctionPrivate
-{
+struct _GPFunctionPrivate {
     GPContext *context; /* execution context */
     gchar *name;    /* name of function */
     gchar *vars;    /* variables */
@@ -85,8 +84,7 @@ static double fact (double);
 
 /* end of helper functions */
 
-enum
-{
+enum {
     PROP_0,
 
     PROP_CONTEXT,
@@ -108,28 +106,27 @@ static void gp_function_set_property (GObject *object,
     GPFunction *self = GP_FUNCTION (object);
     GPFunctionPrivate *priv = gp_function_get_instance_private (self);
 
-    switch (property_id)
-        {
-        case PROP_CONTEXT:
-            gp_function_set_context (self, g_value_get_object (value));
-            break;
-        case PROP_NAME:
-            g_free (priv->name);
-            priv->name = g_value_dup_string (value);
-            break;
-        case PROP_VARS:
-            g_free (priv->vars);
-            priv->vars = g_value_dup_string (value);
-            break;
-        case PROP_BODY:
-            g_free (priv->body);
-            priv->body = g_value_dup_string (value);
-            break;
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
-                                               property_id, pspec);
-            break;
-        }
+    switch (property_id) {
+    case PROP_CONTEXT:
+        gp_function_set_context (self, g_value_get_object (value));
+        break;
+    case PROP_NAME:
+        g_free (priv->name);
+        priv->name = g_value_dup_string (value);
+        break;
+    case PROP_VARS:
+        g_free (priv->vars);
+        priv->vars = g_value_dup_string (value);
+        break;
+    case PROP_BODY:
+        g_free (priv->body);
+        priv->body = g_value_dup_string (value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+                                           property_id, pspec);
+        break;
+    }
 }
 
 static void gp_function_get_property (GObject *object,
@@ -139,24 +136,23 @@ static void gp_function_get_property (GObject *object,
 {
     GPFunction *self = GP_FUNCTION (object);
 
-    switch (property_id)
-        {
-        case PROP_CONTEXT:
-            g_value_set_object (value, gp_function_get_context (self));
-        case PROP_NAME:
-            g_value_set_string (value, gp_function_get_name (self));
-            break;
-        case PROP_VARS:
-            g_value_set_string (value, gp_function_get_vars (self));
-            break;
-        case PROP_BODY:
-            g_value_set_string (value, gp_function_get_body (self));
-            break;
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
-                                               property_id, pspec);
-            break;
-        }
+    switch (property_id) {
+    case PROP_CONTEXT:
+        g_value_set_object (value, gp_function_get_context (self));
+    case PROP_NAME:
+        g_value_set_string (value, gp_function_get_name (self));
+        break;
+    case PROP_VARS:
+        g_value_set_string (value, gp_function_get_vars (self));
+        break;
+    case PROP_BODY:
+        g_value_set_string (value, gp_function_get_body (self));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+                                           property_id, pspec);
+        break;
+    }
 }
 
 static void gp_function_dispose (GObject *gobject)
@@ -167,7 +163,8 @@ static void gp_function_dispose (GObject *gobject)
     g_log (GP_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s()", __func__);
     /* dispose references */
     if (GP_IS_CONTEXT (priv->context))
-        g_object_remove_weak_pointer (G_OBJECT (priv->context), (gpointer *) &priv->context);
+        g_object_remove_weak_pointer (G_OBJECT (priv->context),
+                                      (gpointer *) &priv->context);
 
     G_OBJECT_CLASS (gp_function_parent_class)->dispose (gobject);
 }
@@ -253,7 +250,8 @@ void gp_function_set_context (GPFunction *self, GPContext *context)
     g_return_if_fail (GP_IS_CONTEXT (context));
 
     if (GP_IS_CONTEXT (priv->context))
-        g_object_remove_weak_pointer (G_OBJECT (priv->context), (gpointer *) &priv->context);
+        g_object_remove_weak_pointer (G_OBJECT (priv->context),
+                                      (gpointer *) &priv->context);
     priv->context = context;
     g_object_add_weak_pointer (G_OBJECT (context), (gpointer *) &priv->context);
 }
@@ -318,117 +316,91 @@ static double gp_function_real_evalv (GPFunction *self, va_list args)
     operators = stack_int_new (10);
     operands = stack_double_new (10);
 
-    for (p=priv->body; *p; )
-        {
-            if ((p2 = parse_num (p, &res)) > p)     // if number
-                {
-                    stack_push (operands, res);
-                    p = p2;
-                }
-            else if (strchr (priv->vars, *p) != NULL)       // if variable
-                {
-                    stack_push (operands, vals[strchr (priv->vars,*p) - priv->vars]);
-                    ++p;
-                }
-            else if ((p2 = parse_global_var (priv->context, p, &global_var)) > p)
-                {
-                    stack_push (operands, gp_variable_get_value (global_var));
-                    p = p2;
-                }
-            else if (is_operator (*p))
-                {
-                    // pop all operators until we meet a '(' or an operator
-                    // of lower precedence
-                    g_debug ("%s: found op %c\n", __func__, *p);
-                    while (!stack_empty (operators)
-                            && (op = stack_peek (operators)) != '('
-                            && (precedence (*p) <= precedence (op)
-                                || associativity (*p) != ASSOC_RTL))
-                        {
-                            op = stack_pop (operators);
-                            g_debug ("%s: popping %c first\n",
-                                     __func__, op);
-                            val2 = stack_pop (operands);
-                            val1 = stack_pop (operands);
-                            res = opfunc (op) (val1, val2);
-                            g_debug ("%s: pushing %lf %c %lf\n",
-                                     __func__, val1, op, val2);
-                            stack_push (operands, res);
-                        }
-                    g_debug ("%s: pushing %c\n", __func__, *p);
-                    stack_push (operators, *p);
-                    ++p;
-                }
-            else if (*p == '(')
-                {
-                    stack_push (operators, *p);
-                    ++p;
-                }
-            else if (*p == ')')
-                {
-                    g_debug ("%s: found ')'; condensing values\n", __func__);
-                    while (!stack_empty (operators)
-                            && stack_peek (operators) != '(')
-                        {
-                            op = stack_pop (operators);
-                            val2 = stack_pop (operands);
-                            val1 = stack_pop (operands);
-                            res = opfunc (op) (val1, val2);
-                            stack_push (operands, res);
-                        }
-                    if (stack_peek (operators) != '(')
-                        {
-                            g_warning ("%s: missing '('\n", __func__);
-                            goto end;
-                        }
-                    else
-                        stack_pop (operators);  // pop '('
-                    ++p;
-                }
-            else if (isgraph (*p))
-                {
-                    size_t elen;
-                    char *expr_str = get_word (p, &elen);
-                    if (elen > 0)
-                        {
-                            g_warning ("%s: undefined function, "
-                                       "expression, operator, or variable '%s'\n",
-                                       __func__, expr_str);
-                            p += elen;
-                        }
-                    else
-                        {
-                            g_warning ("%s: undefined function, "
-                                       "expression, operator, or variable '%c'\n",
-                                       __func__, *p);
-                            ++p;
-                        }
-                    free (expr_str);
-                    goto end;
-                }
-            else
-                ++p;
-        }
-
-    while (!stack_empty (operators))
-        {
-            op = stack_pop (operators);
-            if (op == '(')
-                {
-                    g_warning ("%s: unmatched '('\n", __func__);
-                    break;
-                }
-            else
-                {
-                    val2 = stack_pop (operands);
-                    val1 = stack_pop (operands);
-                    res = opfunc (op) (val1, val2);
-                    g_debug ("res = %lf", res);
-                    g_debug ("%s: pushing %lf %c %lf\n", __func__,
-                             val1, op, val2);
-                }
+    for (p=priv->body; *p; ) {
+        if ((p2 = parse_num (p, &res)) > p) {   // if number
             stack_push (operands, res);
+            p = p2;
+        } else if (strchr (priv->vars, *p) != NULL) {   // if variable
+            stack_push (operands, vals[strchr (priv->vars,*p) - priv->vars]);
+            ++p;
+        } else if ((p2 = parse_global_var (priv->context, p, &global_var)) > p) {
+            stack_push (operands, gp_variable_get_value (global_var));
+            p = p2;
+        } else if (is_operator (*p)) {
+            // pop all operators until we meet a '(' or an operator
+            // of lower precedence
+            g_debug ("%s: found op %c\n", __func__, *p);
+            while (!stack_empty (operators)
+                   && (op = stack_peek (operators)) != '('
+                   && (precedence (*p) <= precedence (op)
+                       || associativity (*p) != ASSOC_RTL)) {
+                op = stack_pop (operators);
+                g_debug ("%s: popping %c first\n",
+                         __func__, op);
+                val2 = stack_pop (operands);
+                val1 = stack_pop (operands);
+                res = opfunc (op) (val1, val2);
+                g_debug ("%s: pushing %lf %c %lf\n",
+                         __func__, val1, op, val2);
+                stack_push (operands, res);
+            }
+            g_debug ("%s: pushing %c\n", __func__, *p);
+            stack_push (operators, *p);
+            ++p;
+        } else if (*p == '(') {
+            stack_push (operators, *p);
+            ++p;
+        } else if (*p == ')') {
+            g_debug ("%s: found ')'; condensing values\n", __func__);
+            while (!stack_empty (operators)
+                   && stack_peek (operators) != '(') {
+                op = stack_pop (operators);
+                val2 = stack_pop (operands);
+                val1 = stack_pop (operands);
+                res = opfunc (op) (val1, val2);
+                stack_push (operands, res);
+            }
+            if (stack_peek (operators) != '(') {
+                g_warning ("%s: missing '('\n", __func__);
+                goto end;
+            } else
+                stack_pop (operators);  // pop '('
+            ++p;
+        } else if (isgraph (*p)) {
+            size_t elen;
+            char *expr_str = get_word (p, &elen);
+            if (elen > 0) {
+                g_warning ("%s: undefined function, "
+                           "expression, operator, or variable '%s'\n",
+                           __func__, expr_str);
+                p += elen;
+            } else {
+                g_warning ("%s: undefined function, "
+                           "expression, operator, or variable '%c'\n",
+                           __func__, *p);
+                ++p;
+            }
+            free (expr_str);
+            goto end;
+        } else
+            ++p;
+    }
+
+    while (!stack_empty (operators)) {
+        op = stack_pop (operators);
+        if (op == '(') {
+            g_warning ("%s: unmatched '('\n", __func__);
+            break;
+        } else {
+            val2 = stack_pop (operands);
+            val1 = stack_pop (operands);
+            res = opfunc (op) (val1, val2);
+            g_debug ("res = %lf", res);
+            g_debug ("%s: pushing %lf %c %lf\n", __func__,
+                     val1, op, val2);
         }
+        stack_push (operands, res);
+    }
 
     res = stack_empty (operands) ? 0 : stack_pop (operands);
 end:
@@ -515,11 +487,10 @@ static double fact (double n)
     if (v < 2) return 1;
     long r = (v % 2) ? 1 + v/2 : 1; // if odd
     long p = v, a = v, b = v-2;
-    while (b > 1)
-        {
-            p *= a + b;
-            a += b;
-            b -= 2;
-        }
+    while (b > 1) {
+        p *= a + b;
+        a += b;
+        b -= 2;
+    }
     return p * r;   // multiply by mid
 }

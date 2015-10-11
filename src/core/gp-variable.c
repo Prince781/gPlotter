@@ -2,8 +2,7 @@
 #include "program.h"
 #include <math.h>   /* constants */
 
-struct _GPVariablePrivate
-{
+struct _GPVariablePrivate {
     gchar *name;
     gdouble value;
 };
@@ -12,8 +11,7 @@ typedef struct _GPVariablePrivate GPVariablePrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GPVariable, gp_variable, G_TYPE_OBJECT);
 
-enum
-{
+enum {
     PROP_0,
 
     PROP_NAME,
@@ -33,20 +31,19 @@ static void gp_variable_set_property (GObject *object,
     GPVariable *self = GP_VARIABLE (object);
     GPVariablePrivate *priv = gp_variable_get_instance_private (self);
 
-    switch (property_id)
-        {
-        case PROP_NAME:
-            g_free (priv->name);
-            priv->name = g_value_dup_string (value);
-            break;
-        case PROP_VALUE:
-            priv->value = g_value_get_double (value);
-            break;
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
-                                               property_id, pspec);
-            break;
-        }
+    switch (property_id) {
+    case PROP_NAME:
+        g_free (priv->name);
+        priv->name = g_value_dup_string (value);
+        break;
+    case PROP_VALUE:
+        priv->value = g_value_get_double (value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+                                           property_id, pspec);
+        break;
+    }
 }
 
 static void gp_variable_get_property (GObject *object,
@@ -57,19 +54,18 @@ static void gp_variable_get_property (GObject *object,
     GPVariable *self = GP_VARIABLE (object);
     GPVariablePrivate *priv = gp_variable_get_instance_private (self);
 
-    switch (property_id)
-        {
-        case PROP_NAME:
-            g_value_set_string (value, priv->name);
-            break;
-        case PROP_VALUE:
-            g_value_set_double (value, priv->value);
-            break;
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
-                                               property_id, pspec);
-            break;
-        }
+    switch (property_id) {
+    case PROP_NAME:
+        g_value_set_string (value, priv->name);
+        break;
+    case PROP_VALUE:
+        g_value_set_double (value, priv->value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object,
+                                           property_id, pspec);
+        break;
+    }
 }
 
 static void gp_variable_dispose (GObject *gobject)

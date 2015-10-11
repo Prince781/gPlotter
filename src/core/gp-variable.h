@@ -9,8 +9,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GPVariable, gp_variable, GP, VARIABLE, GObject);
 
-struct _GPVariable
-{
+struct _GPVariable {
     GObject parent_instance;
 };
 
@@ -32,7 +31,7 @@ const gchar *gp_variable_get_name (GPVariable *self);
 
 /**
  * gp_variable_get_value:
- * 
+ *
  * Returns: the value of the #GPVariable
  */
 gdouble gp_variable_get_value (GPVariable *self);

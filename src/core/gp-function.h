@@ -10,8 +10,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_DERIVABLE_TYPE (GPFunction, gp_function, GP, FUNCTION, GObject)
 
-struct _GPFunctionClass
-{
+struct _GPFunctionClass {
     GObjectClass parent_class;
 
     /* virtual methods */

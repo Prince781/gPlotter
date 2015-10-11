@@ -3,8 +3,7 @@
 
 #include <glib-object.h>
 
-struct native_func
-{
+struct native_func {
     const char *name;
     GCallback callback;
     unsigned params;

@@ -12,8 +12,7 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GPNativeFunction, gp_native_function, GP, NATIVE_FUNCTION,
                       GPFunction);
 
-struct _GPNativeFunction
-{
+struct _GPNativeFunction {
     GPFunction parent_instance;
 };
 
@@ -22,7 +21,7 @@ struct _GPNativeFunction
  * @name: the name of the function
  * @native: (scope notified): a callback
  * @nparams: number of parameters for the function
- * 
+ *
  * Returns: (transfer full): a new #GPNativeFunction
  */
 GPFunction *gp_native_function_new (const gchar *name,
